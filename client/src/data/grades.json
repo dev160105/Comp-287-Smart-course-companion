@@ -1,0 +1,103 @@
+[
+  {
+    "id": "GRD001",
+    "studentId": "USR001",
+    "courseId": "CS101",
+    "assessments": [
+      {
+        "assessmentId": "ASS001",
+        "title": "Assignment 1: Variables and Data Types",
+        "pointsEarned": 48,
+        "maxPoints": 50,
+        "percentage": 96,
+        "submissionDate": "2025-02-14"
+      },
+      {
+        "assessmentId": "ASS002",
+        "title": "Quiz 1: Fundamentals",
+        "pointsEarned": 28,
+        "maxPoints": 30,
+        "percentage": 93,
+        "submissionDate": "2025-02-22"
+      }
+    ],
+    "currentGrade": "A",
+    "gpa": 4.0
+  },
+  {
+    "id": "GRD002",
+    "studentId": "USR001",
+    "courseId": "CS301",
+    "assessments": [
+      {
+        "assessmentId": "ASS004",
+        "title": "Project 1: Implement Binary Search Tree",
+        "pointsEarned": 72,
+        "maxPoints": 75,
+        "percentage": 96,
+        "submissionDate": "2025-02-27"
+      }
+    ],
+    "currentGrade": "A",
+    "gpa": 4.0
+  },
+  {
+    "id": "GRD003",
+    "studentId": "USR001",
+    "courseId": "MATH201",
+    "assessments": [
+      {
+        "assessmentId": "ASS006",
+        "title": "Problem Set 4: Integration Techniques",
+        "pointsEarned": 38,
+        "maxPoints": 40,
+        "percentage": 95,
+        "submissionDate": "2025-02-19"
+      }
+    ],
+    "currentGrade": "A-",
+    "gpa": 3.9
+  },
+  {
+    "id": "GRD004",
+    "studentId": "USR002",
+    "courseId": "CS101",
+    "assessments": [
+      {
+        "assessmentId": "ASS001",
+        "title": "Assignment 1: Variables and Data Types",
+        "pointsEarned": 50,
+        "maxPoints": 50,
+        "percentage": 100,
+        "submissionDate": "2025-02-13"
+      },
+      {
+        "assessmentId": "ASS002",
+        "title": "Quiz 1: Fundamentals",
+        "pointsEarned": 30,
+        "maxPoints": 30,
+        "percentage": 100,
+        "submissionDate": "2025-02-21"
+      }
+    ],
+    "currentGrade": "A+",
+    "gpa": 4.0
+  },
+  {
+    "id": "GRD005",
+    "studentId": "USR003",
+    "courseId": "MATH201",
+    "assessments": [
+      {
+        "assessmentId": "ASS006",
+        "title": "Problem Set 4: Integration Techniques",
+        "pointsEarned": 34,
+        "maxPoints": 40,
+        "percentage": 85,
+        "submissionDate": "2025-02-20"
+      }
+    ],
+    "currentGrade": "B+",
+    "gpa": 3.3
+  }
+]

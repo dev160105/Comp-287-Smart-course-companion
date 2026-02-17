@@ -1,0 +1,98 @@
+[
+  {
+    "id": "STRUCT001",
+    "courseId": "CS101",
+    "title": "Introduction to Computer Science",
+    "modules": [
+      {
+        "moduleId": "MOD001",
+        "title": "Module 1: Programming Basics",
+        "order": 1,
+        "topics": [
+          {
+            "topicId": "TOP001",
+            "title": "Variables and Data Types",
+            "contentType": "lecture",
+            "durationMinutes": 45
+          },
+          {
+            "topicId": "TOP002",
+            "title": "Control Flow",
+            "contentType": "lecture",
+            "durationMinutes": 50
+          },
+          {
+            "topicId": "TOP003",
+            "title": "Functions and Scope",
+            "contentType": "lecture",
+            "durationMinutes": 55
+          }
+        ]
+      },
+      {
+        "moduleId": "MOD002",
+        "title": "Module 2: Object-Oriented Programming",
+        "order": 2,
+        "topics": [
+          {
+            "topicId": "TOP004",
+            "title": "Classes and Objects",
+            "contentType": "lecture",
+            "durationMinutes": 60
+          },
+          {
+            "topicId": "TOP005",
+            "title": "Inheritance and Polymorphism",
+            "contentType": "lecture",
+            "durationMinutes": 65
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "STRUCT002",
+    "courseId": "CS301",
+    "title": "Data Structures and Algorithms",
+    "modules": [
+      {
+        "moduleId": "MOD003",
+        "title": "Module 1: Linear Data Structures",
+        "order": 1,
+        "topics": [
+          {
+            "topicId": "TOP006",
+            "title": "Arrays and Linked Lists",
+            "contentType": "lecture",
+            "durationMinutes": 70
+          },
+          {
+            "topicId": "TOP007",
+            "title": "Stacks and Queues",
+            "contentType": "lecture",
+            "durationMinutes": 60
+          }
+        ]
+      },
+      {
+        "moduleId": "MOD004",
+        "title": "Module 2: Tree and Graph Structures",
+        "order": 2,
+        "topics": [
+          {
+            "topicId": "TOP008",
+            "title": "Binary Trees",
+            "contentType": "lecture",
+            "durationMinutes": 75
+          },
+          {
+            "topicId": "TOP009",
+            "title": "Graphs and Traversal",
+            "contentType": "lecture",
+            "durationMinutes": 80
+          }
+        ]
+      }
+    ]
+  }
+]

@@ -1,0 +1,58 @@
+[
+  {
+    "id": "USR001",
+    "firstName": "John",
+    "lastName": "Doe",
+    "email": "john.doe@university.edu",
+    "role": "student",
+    "enrolledCourses": ["CS101", "MATH201", "CS301"],
+    "gpa": 3.75,
+    "major": "Computer Science"
+  },
+  {
+    "id": "USR002",
+    "firstName": "Jane",
+    "lastName": "Smith",
+    "email": "jane.smith@university.edu",
+    "role": "student",
+    "enrolledCourses": ["CS101", "CS301"],
+    "gpa": 3.92,
+    "major": "Computer Science"
+  },
+  {
+    "id": "USR003",
+    "firstName": "Sarah",
+    "lastName": "Johnson",
+    "email": "sarah.johnson@university.edu",
+    "role": "student",
+    "enrolledCourses": ["MATH201"],
+    "gpa": 3.45,
+    "major": "Mathematics"
+  },
+  {
+    "id": "INS001",
+    "firstName": "Dr. Michael",
+    "lastName": "Brown",
+    "email": "m.brown@university.edu",
+    "role": "instructor",
+    "teachingCourses": ["CS101", "CS301"],
+    "department": "Computer Science"
+  },
+  {
+    "id": "INS002",
+    "firstName": "Dr. Emily",
+    "lastName": "Wilson",
+    "email": "e.wilson@university.edu",
+    "role": "instructor",
+    "teachingCourses": ["MATH201"],
+    "department": "Mathematics"
+  },
+  {
+    "id": "ADM001",
+    "firstName": "Admin",
+    "lastName": "User",
+    "email": "admin@university.edu",
+    "role": "admin",
+    "permissions": ["manage_courses", "manage_users", "view_analytics"]
+  }
+]

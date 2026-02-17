@@ -1,0 +1,22 @@
+{
+  "name": "smart-course-companion",
+  "version": "1.0.0",
+  "description": "A comprehensive educational platform for course management and student progress tracking",
+  "private": true,
+  "scripts": {
+    "dev": "concurrently \"cd client && npm run dev\" \"cd server && npm run dev\"",
+    "client": "cd client && npm run dev",
+    "server": "cd server && npm run dev",
+    "install-all": "npm install && cd client && npm install && cd ../server && npm install"
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.0"
+  },
+  "keywords": [
+    "education",
+    "course-management",
+    "student-tracking"
+  ],
+  "author": "Smart Course Companion Team",
+  "license": "MIT"
+}

@@ -1,0 +1,62 @@
+[
+  {
+    "id": "ASS001",
+    "courseId": "CS101",
+    "title": "Assignment 1: Variables and Data Types",
+    "type": "assignment",
+    "description": "Write a program to demonstrate understanding of variables and data types",
+    "dueDate": "2025-02-15",
+    "maxPoints": 50,
+    "status": "open"
+  },
+  {
+    "id": "ASS002",
+    "courseId": "CS101",
+    "title": "Quiz 1: Fundamentals",
+    "type": "quiz",
+    "description": "Timed quiz covering chapters 1-3",
+    "dueDate": "2025-02-22",
+    "maxPoints": 30,
+    "status": "open"
+  },
+  {
+    "id": "ASS003",
+    "courseId": "CS101",
+    "title": "Midterm Exam",
+    "type": "exam",
+    "description": "Comprehensive exam covering first half of course material",
+    "dueDate": "2025-03-22",
+    "maxPoints": 100,
+    "status": "upcoming"
+  },
+  {
+    "id": "ASS004",
+    "courseId": "CS301",
+    "title": "Project 1: Implement Binary Search Tree",
+    "type": "project",
+    "description": "Implement and test a complete binary search tree with traversal methods",
+    "dueDate": "2025-02-28",
+    "maxPoints": 75,
+    "status": "open"
+  },
+  {
+    "id": "ASS005",
+    "courseId": "CS301",
+    "title": "Quiz 2: Trees and Graphs",
+    "type": "quiz",
+    "description": "Quiz on tree structures and graph algorithms",
+    "dueDate": "2025-03-08",
+    "maxPoints": 30,
+    "status": "open"
+  },
+  {
+    "id": "ASS006",
+    "courseId": "MATH201",
+    "title": "Problem Set 4: Integration Techniques",
+    "type": "assignment",
+    "description": "Set of 20 problems on various integration techniques",
+    "dueDate": "2025-02-20",
+    "maxPoints": 40,
+    "status": "open"
+  }
+]
