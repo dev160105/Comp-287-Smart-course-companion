@@ -31,6 +31,12 @@ export default function App() {
     setCurrentPage('dashboard');
   };
 
+    const toggleDarkMode = (e) => {
+    document.body.classList.toggle('dark-theme');
+    e.target.innerText = document.body.classList.contains('dark-theme') ? '☀️' : '🌙';
+  };
+
+
   const handleSignupSuccess = (user) => {
     setCurrentUser(user);
     setCurrentPage('dashboard');
@@ -87,6 +93,8 @@ export default function App() {
               <button onClick={() => handleNavigate('courses')} className="nav-link">Courses</button>
               <button onClick={() => handleNavigate('assessments')} className="nav-link">Assessments</button>
               <button onClick={() => handleNavigate('progress')} className="nav-link">Progress</button>
+              <button onClick={toggleDarkMode} className="nav-button"> 🌙 </button>
+              
             </>
           )}
           {isAdmin(currentUser) && (
