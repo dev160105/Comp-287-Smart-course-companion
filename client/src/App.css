@@ -170,6 +170,14 @@ section h2 {
   margin-bottom: 2rem;
 }
 
+.bar-container {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  flex: 1;
+  align-items: center;
+}
+
 .progress-bars {
   background-color: #f9fafb;
   padding: 1.5rem;
@@ -259,4 +267,109 @@ section h2 {
 .nav-link:hover, .nav-button:hover, button:hover {
   transform: scale(1.1);
   border-color: var(--secondary-color);
+}
+
+/* Fix for Login/Signup visibility in Dark Mode */
+body.dark-theme .auth-container > div {
+  background-color: var(--surface) !important;
+  color: var(--text-primary) !important;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+}
+
+body.dark-theme .auth-container h1,
+body.dark-theme .auth-container p,
+body.dark-theme .auth-container label {
+  color: var(--text-primary) !important;
+}
+
+body.dark-theme .auth-toggle, 
+body.dark-theme .demo-info {
+  color: var(--text-secondary) !important;
+}
+
+.grade-chart-wrapper {
+  background: var(--surface);
+  padding: 2rem;
+  border-radius: 0.75rem;
+  margin-top: 2rem;
+  box-shadow: var(--shadow-md);
+}
+
+.chart-title {
+  margin-bottom: 2rem;
+  text-align: center;
+}
+
+.bar-chart {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-around;
+  height: 300px; 
+  border-bottom: 2px solid var(--border);
+  gap: 20px;
+  padding-bottom: 10px;
+}
+
+.bar-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  flex: 1;
+  height: 100%;
+}
+
+.grade-bar-wrapper {
+  height: 100%;
+  width: 100%;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+}
+
+.grade-bar {
+  width: 50px;
+  background: var(--primary-color);
+  border-radius: 6px 6px 0 0;
+  position: relative;
+  transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+  display: flex;
+  justify-content: center;
+}
+
+.bar-score-text {
+  position: absolute;
+  top: -25px;
+  font-weight: bold;
+  font-size: 0.85rem;
+  color: var(--text-primary);
+  white-space: nowrap;
+}
+
+.bar-info {
+  margin-top: 15px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.course-name-label {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  max-width: 100px; 
+  line-height: 1.2;
+}
+
+.course-percentage {
+  font-size: 0.7rem;
+  color: var(--text-secondary);
+  margin-top: 4px;
+}
+
+/* Hover Effect */
+.grade-bar:hover {
+  filter: brightness(1.2);
+  transform: scaleX(1.1);
+  background: var(--secondary-color);
 }
