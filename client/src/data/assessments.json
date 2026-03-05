@@ -37,7 +37,7 @@
     "description": "Implement and test a complete binary search tree with traversal methods",
     "dueDate": "2025-02-28",
     "maxPoints": 75,
-    "status": "open"
+    "status": "open" 
   },
   {
     "id": "ASS005",
@@ -59,4 +59,35 @@
     "maxPoints": 40,
     "status": "open"
   }
+  ,
+{
+  "id": "ASS007",
+  "courseId": "CS101",
+  "title": "Assignment 2: Functions",
+  "type": "assignment",
+  "description": "Practice writing functions and using parameters/return values",
+  "dueDate": "2026-02-27",
+  "maxPoints": 50,
+  "status": "open"
+},
+{
+  "id": "ASS008",
+  "courseId": "CS301",
+  "title": "Quiz 3: Graph Traversal",
+  "type": "quiz",
+  "description": "BFS/DFS concepts and complexity questions",
+  "dueDate": "2026-03-01",
+  "maxPoints": 30,
+  "status": "open"
+},
+{
+  "id": "ASS009",
+  "courseId": "MATH201",
+  "title": "Problem Set 5: Applications of Integration",
+  "type": "assignment",
+  "description": "Area, volume, and applications practice problems",
+  "dueDate": "2026-03-04",
+  "maxPoints": 40,
+  "status": "upcoming"
+}
 ]
