@@ -27,6 +27,7 @@ export default function StudentDashboard({ currentUser }) {
   today.setHours(0, 0, 0, 0);
 
   const upcoming = allAssessments
+    .filter(a => myCourseIds.has(a.courseId))
     .filter(a => new Date(a.dueDate + "T00:00:00") >= today)
     .sort((a, b) => new Date(a.dueDate) - new Date(b.dueDate))
     .slice(0, 5);

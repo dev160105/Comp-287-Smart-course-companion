@@ -9,13 +9,16 @@ import CourseList from './components/Student/CourseList';
 import AssessmentList from './components/Student/AssessmentList';
 import CourseManager from './components/Admin/CourseManager';
 import CourseBuilder from './components/Admin/CourseBuilder';
+import CourseDetails from './components/Student/CourseDetails';
 import { getCurrentUser, logout, isStudent, isAdmin } from './utils/auth';
+import { loadGrades } from './utils/dataLoader';
 import './App.css';
 
 export default function App() {
   const [currentUser, setCurrentUser] = useState(null);
   const [currentPage, setCurrentPage] = useState('login');
   const [showSignup, setShowSignup] = useState(false);
+  const [selectedCourseId, setSelectedCourseId] = useState(null);
 
   useEffect(() => {
     // Check if user is already logged in
@@ -122,12 +125,12 @@ const courseGrades = [
         {isStudent(currentUser) && (
           <>
             {currentPage === 'dashboard' && <StudentDashboard currentUser={currentUser} />}
-            {currentPage === 'courses' && ( <> <CourseList onSelectCourse={() => {}} /> </>
-            )}
+            {currentPage === 'courses' && <CourseList onSelectCourse={(id) => { setSelectedCourseId(id); setCurrentPage('course-details'); }} />}
+            {currentPage === 'course-details' && <CourseDetails courseId={selectedCourseId} />}
             {currentPage === 'assessments' && <AssessmentList currentUser={currentUser} />}
             {currentPage === 'progress' && (
               <>
-                <CircularProgress currentUser={currentUser} grades={[]} />
+                <CircularProgress currentUser={currentUser} grades={loadGrades().filter(g => g.studentId === currentUser.id)} />
                 <div className="grade-chart-wrapper">
                   <h2 className="chart-title">Course Performance Overview</h2>
                   <div className="bar-chart">

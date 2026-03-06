@@ -1,6 +1,6 @@
 // src/components/Student/CourseDetails.jsx
 import { useState, useEffect } from 'react';
-import { getCourseById, getAssessmentsByCourse, getCourseById } from '../../utils/dataLoader';
+import { getCourseById, getAssessmentsByCourse } from '../../utils/dataLoader';
 
 export default function CourseDetails({ courseId }) {
   const [course, setCourse] = useState(null);
