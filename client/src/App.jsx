@@ -122,9 +122,12 @@ const courseGrades = [
         {isStudent(currentUser) && (
           <>
             {currentPage === 'dashboard' && <StudentDashboard currentUser={currentUser} />}
-            {currentPage === 'courses' && (
+            {currentPage === 'courses' && ( <> <CourseList onSelectCourse={() => {}} /> </>
+            )}
+            {currentPage === 'assessments' && <AssessmentList currentUser={currentUser} />}
+            {currentPage === 'progress' && (
               <>
-                <CourseList onSelectCourse={() => {}} />
+                <CircularProgress currentUser={currentUser} grades={[]} />
                 <div className="grade-chart-wrapper">
                   <h2 className="chart-title">Course Performance Overview</h2>
                   <div className="bar-chart">
@@ -146,12 +149,10 @@ const courseGrades = [
                 </div>
               </>
             )}
-            {currentPage === 'assessments' && <AssessmentList currentUser={currentUser} />}
-            {currentPage === 'progress' && <CircularProgress currentUser={currentUser} grades={[]} />}
           </>
         )}  
         
-        {isAdmin(currentUser) && (
+        {isAdmin(currentUser) && ( 
           <>
             {currentPage === 'dashboard' && <AdminDashboard currentUser={currentUser} />}
             {currentPage === 'course-manager' && <CourseManager onToggleCourse={() => {}} />}
