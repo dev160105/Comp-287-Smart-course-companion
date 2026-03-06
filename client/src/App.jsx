@@ -31,6 +31,18 @@ export default function App() {
     setCurrentPage('dashboard');
   };
 
+    const toggleDarkMode = (e) => {
+    document.body.classList.toggle('dark-theme');
+    e.target.innerText = document.body.classList.contains('dark-theme') ? '☀️' : '🌙';
+  };
+
+const courseGrades = [
+  { name: 'Introduction to Computer Science', score: 88 },
+  { name: 'Data Structures and Algorithms', score: 76 },
+  { name: 'Calculus II', score: 92 },
+  { name: 'Web Development Fundamentals', score: 65 }
+];
+
   const handleSignupSuccess = (user) => {
     setCurrentUser(user);
     setCurrentPage('dashboard');
@@ -87,6 +99,8 @@ export default function App() {
               <button onClick={() => handleNavigate('courses')} className="nav-link">Courses</button>
               <button onClick={() => handleNavigate('assessments')} className="nav-link">Assessments</button>
               <button onClick={() => handleNavigate('progress')} className="nav-link">Progress</button>
+              <button onClick={toggleDarkMode} className="nav-button"> 🌙 </button>
+              
             </>
           )}
           {isAdmin(currentUser) && (
@@ -102,18 +116,43 @@ export default function App() {
           <button onClick={handleLogout} className="btn-logout">Logout</button>
         </div>
       </nav>
+      
 
       <main className="main-content">
         {isStudent(currentUser) && (
           <>
             {currentPage === 'dashboard' && <StudentDashboard currentUser={currentUser} />}
-            {currentPage === 'courses' && <CourseList onSelectCourse={() => {}} />}
+            {currentPage === 'courses' && ( <> <CourseList onSelectCourse={() => {}} /> </>
+            )}
             {currentPage === 'assessments' && <AssessmentList currentUser={currentUser} />}
-            {currentPage === 'progress' && <CircularProgress currentUser={currentUser} grades={[]} />}
+            {currentPage === 'progress' && (
+              <>
+                <CircularProgress currentUser={currentUser} grades={[]} />
+                <div className="grade-chart-wrapper">
+                  <h2 className="chart-title">Course Performance Overview</h2>
+                  <div className="bar-chart">
+                    {courseGrades.map((course, index) => (
+                      <div key={index} className="bar-container">
+                        <div className="grade-bar-wrapper">
+                          <div 
+                            className="grade-bar" style={{ height: `${course.score}%` }} >
+                            <span className="bar-score-text">{course.score}/100</span>
+                          </div>
+                        </div>
+                        <div className="bar-info">
+                          <span className="course-name-label">{course.name}</span>
+                          <span className="course-percentage">({course.score}%)</span>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </>
+            )}
           </>
-        )}
+        )}  
         
-        {isAdmin(currentUser) && (
+        {isAdmin(currentUser) && ( 
           <>
             {currentPage === 'dashboard' && <AdminDashboard currentUser={currentUser} />}
             {currentPage === 'course-manager' && <CourseManager onToggleCourse={() => {}} />}
