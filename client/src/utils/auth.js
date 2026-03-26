@@ -1,62 +1,39 @@
 // src/utils/auth.js
-// Mock authentication utility for Phase 1
+// Phase 2: JWT-based authentication using localStorage
 
-const MOCK_SESSION_STORAGE_KEY = 'currentUser';
+const USER_KEY = 'currentUser';
+const TOKEN_KEY = 'token';
 
-export const mockLogin = (email, password) => {
-  // Mock login - in Phase 2, this will call the backend API
-  const users = [
-    { id: 'USR001', email: 'john.doe@university.edu', password: 'password123', role: 'student', name: 'John Doe' },
-    { id: 'USR002', email: 'jane.smith@university.edu', password: 'password123', role: 'student', name: 'Jane Smith' },
-    { id: 'INS001', email: 'm.brown@university.edu', password: 'password123', role: 'instructor', name: 'Dr. Michael Brown' },
-    { id: 'ADM001', email: 'admin@university.edu', password: 'admin123', role: 'admin', name: 'Admin User' },
-  ];
-
-  const user = users.find(u => u.email === email && u.password === password);
-  if (user) {
-    const { password, ...userWithoutPassword } = user;
-    sessionStorage.setItem(MOCK_SESSION_STORAGE_KEY, JSON.stringify(userWithoutPassword));
-    return userWithoutPassword;
-  }
-  return null;
+export const setAuthData = (token, user) => {
+  localStorage.setItem(TOKEN_KEY, token);
+  localStorage.setItem(USER_KEY, JSON.stringify(user));
 };
 
-export const mockSignup = (data) => {
-  // Mock signup - in Phase 2, this will call the backend API
-  const newUser = {
-    id: `USR${Math.floor(Math.random() * 10000)}`,
-    email: data.email,
-    role: 'student',
-    name: `${data.firstName} ${data.lastName}`,
-  };
-  sessionStorage.setItem(MOCK_SESSION_STORAGE_KEY, JSON.stringify(newUser));
-  return newUser;
-};
+export const getToken = () => localStorage.getItem(TOKEN_KEY);
 
 export const getCurrentUser = () => {
-  const user = sessionStorage.getItem(MOCK_SESSION_STORAGE_KEY);
+  const user = localStorage.getItem(USER_KEY);
   return user ? JSON.parse(user) : null;
 };
 
 export const logout = () => {
-  sessionStorage.removeItem(MOCK_SESSION_STORAGE_KEY);
+  localStorage.removeItem(TOKEN_KEY);
+  localStorage.removeItem(USER_KEY);
 };
 
-export const isAuthenticated = () => {
-  return getCurrentUser() !== null;
+export const isAuthenticated = () => getToken() !== null && getCurrentUser() !== null;
+
+export const isStudent = (user) => {
+  const u = user || getCurrentUser();
+  return u && u.role === 'student';
 };
 
-export const isStudent = () => {
-  const user = getCurrentUser();
-  return user && user.role === 'student';
+export const isInstructor = (user) => {
+  const u = user || getCurrentUser();
+  return u && u.role === 'instructor';
 };
 
-export const isInstructor = () => {
-  const user = getCurrentUser();
-  return user && user.role === 'instructor';
-};
-
-export const isAdmin = () => {
-  const user = getCurrentUser();
-  return user && user.role === 'admin';
+export const isAdmin = (user) => {
+  const u = user || getCurrentUser();
+  return u && u.role === 'admin';
 };

@@ -1,6 +1,7 @@
 // src/components/Auth/Signup.jsx
 import { useState } from 'react';
-import { mockSignup } from '../../utils/auth';
+import api from '../../utils/api';
+import { setAuthData } from '../../utils/auth';
 
 export default function Signup({ onSignupSuccess }) {
   const [formData, setFormData] = useState({
@@ -11,23 +12,37 @@ export default function Signup({ onSignupSuccess }) {
     major: '',
   });
   const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     if (!formData.firstName || !formData.lastName || !formData.email || !formData.password) {
       setError('All fields are required');
       return;
     }
+    setError('');
+    setLoading(true);
     try {
-      const user = mockSignup(formData);
+      const res = await api.post('/api/auth/register', {
+        firstName: formData.firstName,
+        lastName: formData.lastName,
+        email: formData.email,
+        password: formData.password,
+        major: formData.major,
+        role: 'student',
+      });
+      const { token, user } = res.data;
+      setAuthData(token, user);
       onSignupSuccess(user);
     } catch (err) {
-      setError('Signup failed. Please try again.');
+      setError(err.response?.data?.message || 'Signup failed. Please try again.');
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -92,7 +107,9 @@ export default function Signup({ onSignupSuccess }) {
           />
         </div>
         {error && <p className="error-message">{error}</p>}
-        <button type="submit" className="btn-primary">Sign Up</button>
+        <button type="submit" className="btn-primary" disabled={loading}>
+          {loading ? 'Creating account...' : 'Sign Up'}
+        </button>
       </form>
     </div>
   );

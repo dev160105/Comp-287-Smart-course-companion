@@ -1,19 +1,27 @@
 // src/components/Auth/Login.jsx
 import { useState } from 'react';
-import { mockLogin } from '../../utils/auth';
+import api from '../../utils/api';
+import { setAuthData } from '../../utils/auth';
 
 export default function Login({ onLoginSuccess }) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    const user = mockLogin(email, password);
-    if (user) {
+    setError('');
+    setLoading(true);
+    try {
+      const res = await api.post('/api/auth/login', { email, password });
+      const { token, user } = res.data;
+      setAuthData(token, user);
       onLoginSuccess(user);
-    } else {
-      setError('Invalid email or password');
+    } catch (err) {
+      setError(err.response?.data?.message || 'Invalid email or password');
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -44,11 +52,16 @@ export default function Login({ onLoginSuccess }) {
           />
         </div>
         {error && <p className="error-message">{error}</p>}
-        <button type="submit" className="btn-primary">Login</button>
+        <button type="submit" className="btn-primary" disabled={loading}>
+          {loading ? 'Logging in...' : 'Login'}
+        </button>
       </form>
-      <p className="demo-info">
-        Demo Credentials: john.doe@university.edu / password123
-      </p>
+      <div className="demo-info">
+        <p><strong>Demo Credentials:</strong></p>
+        <p>🎓 Student: john.doe@university.edu / password123</p>
+        <p>👨‍🏫 Professor: m.brown@university.edu / password123</p>
+        <p>🔑 Admin: admin@university.edu / admin123</p>
+      </div>
     </div>
   );
 }

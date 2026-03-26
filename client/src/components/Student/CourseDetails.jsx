@@ -1,23 +1,24 @@
 // src/components/Student/CourseDetails.jsx
 import { useState, useEffect } from 'react';
-import { getCourseById, getAssessmentsByCourse } from '../../utils/dataLoader';
+import { getAssessmentsByCourse } from '../../utils/dataLoader';
 
-export default function CourseDetails({ courseId }) {
-  const [course, setCourse] = useState(null);
+export default function CourseDetails({ course, onBack }) {
   const [assessments, setAssessments] = useState([]);
 
   useEffect(() => {
-    const courseData = getCourseById(courseId);
-    const assessmentData = getAssessmentsByCourse(courseId);
-    
-    setCourse(courseData);
-    setAssessments(assessmentData);
-  }, [courseId]);
+    if (course) {
+      const id = course._id || course.id;
+      getAssessmentsByCourse(id).then(setAssessments).catch(console.error);
+    }
+  }, [course]);
 
-  if (!course) return <div>Loading...</div>;
+  if (!course) return <div>Course not found.</div>;
 
   return (
     <div className="course-details">
+      {onBack && (
+        <button className="btn-back" onClick={onBack}>← Back</button>
+      )}
       <h1>{course.title}</h1>
       
       <div className="course-info">
@@ -32,13 +33,13 @@ export default function CourseDetails({ courseId }) {
             <strong>Credits:</strong> {course.credits}
           </div>
           <div className="info-item">
-            <strong>Semester:</strong> {course.semester}
+            <strong>Semester:</strong> {course.semester || 'N/A'}
           </div>
           <div className="info-item">
-            <strong>Meeting Time:</strong> {course.meetingTime}
+            <strong>Meeting Time:</strong> {course.meetingTime || 'TBD'}
           </div>
           <div className="info-item">
-            <strong>Location:</strong> {course.location}
+            <strong>Location:</strong> {course.location || 'TBD'}
           </div>
         </div>
       </div>

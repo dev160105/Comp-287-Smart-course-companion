@@ -10,8 +10,9 @@ import AssessmentList from './components/Student/AssessmentList';
 import CourseManager from './components/Admin/CourseManager';
 import CourseBuilder from './components/Admin/CourseBuilder';
 import CourseDetails from './components/Student/CourseDetails';
-import { getCurrentUser, logout, isStudent, isAdmin } from './utils/auth';
-import { loadGrades } from './utils/dataLoader';
+import { getCurrentUser, logout, isStudent, isAdmin, isInstructor } from './utils/auth';
+import { loadCourses } from './utils/dataLoader';
+import api from './utils/api';
 import './App.css';
 
 export default function App() {
@@ -19,9 +20,65 @@ export default function App() {
   const [currentPage, setCurrentPage] = useState('login');
   const [showSignup, setShowSignup] = useState(false);
   const [selectedCourseId, setSelectedCourseId] = useState(null);
+  const [allCourses, setAllCourses] = useState([]);
+  const [isDarkMode, setIsDarkMode] = useState(() => localStorage.getItem('theme') === 'dark');
+
+  // Load courses from backend whenever a user is logged in
+  const fetchCourses = async () => {
+    try {
+      const courses = await loadCourses();
+      setAllCourses(courses);
+    } catch {
+      // Backend may not be available; keep empty list
+    }
+  };
+
+  const handleSaveCourse = async (formData) => {
+    try {
+      await api.post('/api/courses', {
+        code: formData.code,
+        title: formData.title,
+        description: formData.description,
+        credits: Number(formData.credits),
+        maxCapacity: Number(formData.maxCapacity),
+        semester: formData.semester || 'Spring 2026',
+        startDate: formData.startDate || '',
+        endDate: formData.endDate || '',
+        meetingTime: formData.meetingTime || 'TBD',
+        location: formData.location || 'TBD',
+      });
+      await fetchCourses();
+    } catch (err) {
+      console.error('Failed to save course:', err);
+    }
+    handleNavigate('course-manager');
+  };
+
+  const handleToggleCourse = async (courseId) => {
+    const course = allCourses.find(c => c._id === courseId || c.id === courseId);
+    if (!course) return;
+    try {
+      await api.put(`/api/courses/${course._id || courseId}`, { isActive: !course.isActive });
+      await fetchCourses();
+    } catch (err) {
+      // Optimistic update fallback
+      setAllCourses(prev =>
+        prev.map(c => (c._id === courseId || c.id === courseId) ? { ...c, isActive: !c.isActive } : c)
+      );
+    }
+  };
+
+  const handleDeleteCourse = async (courseId) => {
+    try {
+      await api.delete(`/api/courses/${courseId}`);
+      await fetchCourses();
+    } catch (err) {
+      console.error('Failed to delete course:', err);
+    }
+  };
 
   useEffect(() => {
-    // Check if user is already logged in
+    // Check if user is already logged in (persisted token)
     const user = getCurrentUser();
     if (user) {
       setCurrentUser(user);
@@ -29,22 +86,21 @@ export default function App() {
     }
   }, []);
 
+  useEffect(() => {
+    if (currentUser) fetchCourses();
+  }, [currentUser]);
+
+  useEffect(() => {
+    document.body.classList.toggle('dark-theme', isDarkMode);
+    localStorage.setItem('theme', isDarkMode ? 'dark' : 'light');
+  }, [isDarkMode]);
+
   const handleLoginSuccess = (user) => {
     setCurrentUser(user);
     setCurrentPage('dashboard');
   };
 
-    const toggleDarkMode = (e) => {
-    document.body.classList.toggle('dark-theme');
-    e.target.innerText = document.body.classList.contains('dark-theme') ? '☀️' : '🌙';
-  };
-
-const courseGrades = [
-  { name: 'Introduction to Computer Science', score: 88 },
-  { name: 'Data Structures and Algorithms', score: 76 },
-  { name: 'Calculus II', score: 92 },
-  { name: 'Web Development Fundamentals', score: 65 }
-];
+  const toggleDarkMode = () => setIsDarkMode((prev) => !prev);
 
   const handleSignupSuccess = (user) => {
     setCurrentUser(user);
@@ -54,6 +110,7 @@ const courseGrades = [
   const handleLogout = () => {
     logout();
     setCurrentUser(null);
+    setAllCourses([]);
     setCurrentPage('login');
   };
 
@@ -69,7 +126,7 @@ const courseGrades = [
           <div>
             <Signup onSignupSuccess={handleSignupSuccess} />
             <p className="auth-toggle">
-              Already have an account? 
+              Already have an account?
               <button onClick={() => setShowSignup(false)} className="link-button">
                 Login here
               </button>
@@ -79,7 +136,7 @@ const courseGrades = [
           <div>
             <Login onLoginSuccess={handleLoginSuccess} />
             <p className="auth-toggle">
-              Don't have an account? 
+              Don't have an account?
               <button onClick={() => setShowSignup(true)} className="link-button">
                 Sign up here
               </button>
@@ -102,15 +159,15 @@ const courseGrades = [
               <button onClick={() => handleNavigate('courses')} className="nav-link">Courses</button>
               <button onClick={() => handleNavigate('assessments')} className="nav-link">Assessments</button>
               <button onClick={() => handleNavigate('progress')} className="nav-link">Progress</button>
-              <button onClick={toggleDarkMode} className="nav-button"> 🌙 </button>
-              
+              <button onClick={toggleDarkMode} className="nav-button">{isDarkMode ? 'Light' : 'Dark'}</button>
             </>
           )}
-          {isAdmin(currentUser) && (
+          {(isAdmin(currentUser) || isInstructor(currentUser)) && (
             <>
               <button onClick={() => handleNavigate('dashboard')} className="nav-link">Dashboard</button>
               <button onClick={() => handleNavigate('course-manager')} className="nav-link">Manage Courses</button>
               <button onClick={() => handleNavigate('course-builder')} className="nav-link">Build Course</button>
+              <button onClick={toggleDarkMode} className="nav-button">{isDarkMode ? 'Light' : 'Dark'}</button>
             </>
           )}
         </div>
@@ -119,47 +176,28 @@ const courseGrades = [
           <button onClick={handleLogout} className="btn-logout">Logout</button>
         </div>
       </nav>
-      
 
       <main className="main-content">
         {isStudent(currentUser) && (
           <>
-            {currentPage === 'dashboard' && <StudentDashboard currentUser={currentUser} />}
-            {currentPage === 'courses' && <CourseList onSelectCourse={(id) => { setSelectedCourseId(id); setCurrentPage('course-details'); }} />}
-            {currentPage === 'course-details' && <CourseDetails courseId={selectedCourseId} />}
+            {currentPage === 'dashboard' && <StudentDashboard currentUser={currentUser} onSelectCourse={(id) => { setSelectedCourseId(id); setCurrentPage('course-details'); }} />}
+            {currentPage === 'courses' && <CourseList courses={allCourses} onRefresh={fetchCourses} onSelectCourse={(id) => { setSelectedCourseId(id); setCurrentPage('course-details'); }} />}
+            {currentPage === 'course-details' && <CourseDetails course={allCourses.find(c => (c._id || c.id) === selectedCourseId)} onBack={() => setCurrentPage('courses')} />}
             {currentPage === 'assessments' && <AssessmentList currentUser={currentUser} />}
             {currentPage === 'progress' && (
-              <>
-                <CircularProgress currentUser={currentUser} grades={loadGrades().filter(g => g.studentId === currentUser.id)} />
-                <div className="grade-chart-wrapper">
-                  <h2 className="chart-title">Course Performance Overview</h2>
-                  <div className="bar-chart">
-                    {courseGrades.map((course, index) => (
-                      <div key={index} className="bar-container">
-                        <div className="grade-bar-wrapper">
-                          <div 
-                            className="grade-bar" style={{ height: `${course.score}%` }} >
-                            <span className="bar-score-text">{course.score}/100</span>
-                          </div>
-                        </div>
-                        <div className="bar-info">
-                          <span className="course-name-label">{course.name}</span>
-                          <span className="course-percentage">({course.score}%)</span>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              </>
+              <CircularProgress
+                currentUser={currentUser}
+                courses={allCourses}
+              />
             )}
           </>
-        )}  
-        
-        {isAdmin(currentUser) && ( 
+        )}
+
+        {(isAdmin(currentUser) || isInstructor(currentUser)) && (
           <>
-            {currentPage === 'dashboard' && <AdminDashboard currentUser={currentUser} />}
-            {currentPage === 'course-manager' && <CourseManager onToggleCourse={() => {}} />}
-            {currentPage === 'course-builder' && <CourseBuilder onSaveCourse={() => {}} />}
+            {currentPage === 'dashboard' && <AdminDashboard currentUser={currentUser} courses={allCourses} onNavigate={handleNavigate} />}
+            {currentPage === 'course-manager' && <CourseManager courses={allCourses} onToggleCourse={handleToggleCourse} onDeleteCourse={handleDeleteCourse} />}
+            {currentPage === 'course-builder' && <CourseBuilder onSaveCourse={handleSaveCourse} />}
           </>
         )}
       </main>

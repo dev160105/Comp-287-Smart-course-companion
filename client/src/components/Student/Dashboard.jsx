@@ -1,70 +1,79 @@
 // src/components/Student/Dashboard.jsx
 import { useState, useEffect } from 'react';
-import { loadCourses, loadGrades, loadAssessments } from '../../utils/dataLoader';
+import {
+  loadGrades,
+  triggerReminderEmail,
+  downloadGradesCsv,
+  downloadGradesPdf,
+} from '../../utils/dataLoader';
 
-export default function StudentDashboard({ currentUser }) {
+export default function StudentDashboard({ currentUser, onSelectCourse }) {
   const [courses, setCourses] = useState([]);
-  const [grades, setGrades] = useState([]);
+  const [overallGPA, setOverallGPA] = useState(0);
   const [upcomingAssessments, setUpcomingAssessments] = useState([]);
+  const [info, setInfo] = useState('');
 
   useEffect(() => {
-  // Load mock data
-  const allCourses = loadCourses();
-  const allGrades = loadGrades();
-  const allAssessments = loadAssessments();
-
-  // get student grades once
-  const myGrades = allGrades.filter(g => g.studentId === currentUser.id);
-  setGrades(myGrades);
-
-  // enrolled courses based on grades
-  const myCourseIds = new Set(myGrades.map(g => g.courseId));
-  const enrolledCourses = allCourses.filter(course => myCourseIds.has(course.id));
-  setCourses(enrolledCourses);
-
-  // upcoming assessments
-  const today = new Date();
-  today.setHours(0, 0, 0, 0);
-
-  const upcoming = allAssessments
-    .filter(a => myCourseIds.has(a.courseId))
-    .filter(a => new Date(a.dueDate + "T00:00:00") >= today)
-    .sort((a, b) => new Date(a.dueDate) - new Date(b.dueDate))
-    .slice(0, 5);
-
-  setUpcomingAssessments(upcoming);
-}, [currentUser]);
-  const calculateGPA = () => {
-    if (grades.length === 0) return 0;
-    const total = grades.reduce((sum, g) => {
-      const gradeMap = { 'A+': 4.0, 'A': 4.0, 'A-': 3.7, 'B+': 3.3, 'B': 3.0, 'B-': 2.7, 'C': 2.0, 'F': 0 };
-      return sum + (gradeMap[g.currentGrade] || 0);
-    }, 0);
-    return (total / grades.length).toFixed(2);
-  };
+    const fetchData = async () => {
+      try {
+        // Grades endpoint returns { courses, overallGPA, upcomingAssessments } grouped by course
+        const gradesData = await loadGrades(currentUser.id);
+        const enrolledCourses = gradesData.courses || [];
+        setCourses(enrolledCourses);
+        setOverallGPA(gradesData.overallGPA || 0);
+        setUpcomingAssessments((gradesData.upcomingAssessments || []).slice(0, 5));
+      } catch (err) {
+        console.error('Dashboard fetch error:', err);
+      }
+    };
+    fetchData();
+  }, [currentUser]);
 
   const calculateBreakdown = () => {
     const breakdown = { A: 0, B: 0, C: 0, F: 0 };
-
-    grades.forEach(g => {
-      const letter = g.currentGrade;
+    courses.forEach(c => {
+      const letter = c.currentGrade;
       if (!letter) return;
-
       if (letter.startsWith('A')) breakdown.A++;
       else if (letter.startsWith('B')) breakdown.B++;
       else if (letter.startsWith('C')) breakdown.C++;
       else breakdown.F++;
     });
-
     return breakdown;
   };
 
   const breakdown = calculateBreakdown();
 
+  const handleSendReminder = async () => {
+    try {
+      const result = await triggerReminderEmail(currentUser.id);
+      setInfo(result.message || 'Reminder request completed');
+    } catch (err) {
+      setInfo(err.response?.data?.message || 'Could not send reminder');
+    }
+  };
+
+  const handleDownload = async (kind) => {
+    try {
+      if (kind === 'csv') await downloadGradesCsv(currentUser.id);
+      if (kind === 'pdf') await downloadGradesPdf(currentUser.id);
+      setInfo(`Downloaded ${kind.toUpperCase()} export`);
+    } catch (err) {
+      setInfo(err.response?.data?.message || `Could not download ${kind.toUpperCase()}`);
+    }
+  };
+
   return (
     <div className="student-dashboard">
       <h1>Welcome, {currentUser.name}!</h1>
-      
+      {info && <p className="info-text">{info}</p>}
+
+      <div className="action-buttons" style={{ marginBottom: '1rem' }}>
+        <button className="btn-primary" onClick={() => handleDownload('csv')}>Export CSV</button>
+        <button className="btn-primary" onClick={() => handleDownload('pdf')}>Export PDF</button>
+        <button className="btn-secondary" onClick={handleSendReminder}>Email Reminder</button>
+      </div>
+
       <div className="dashboard-summary">
         <div className="summary-card">
           <h3>Enrolled Courses</h3>
@@ -72,8 +81,8 @@ export default function StudentDashboard({ currentUser }) {
         </div>
         <div className="summary-card">
           <h3>Current GPA</h3>
-          <p className="stat">{calculateGPA()}</p>
-        <div style={{ marginTop: '10px', fontSize: '14px' }}>
+          <p className="stat">{overallGPA.toFixed(2)}</p>
+          <div style={{ marginTop: '10px', fontSize: '14px' }}>
             <strong>Breakdown:</strong>
             <div style={{ display: 'flex', gap: '10px', marginTop: '5px', flexWrap: 'wrap' }}>
               <span>A: {breakdown.A}</span>
@@ -85,7 +94,7 @@ export default function StudentDashboard({ currentUser }) {
         </div>
         <div className="summary-card">
           <h3>Pending Assessments</h3>
-         <p className="stat">{upcomingAssessments.length}</p>
+          <p className="stat">{upcomingAssessments.length}</p>
         </div>
       </div>
 
@@ -95,11 +104,12 @@ export default function StudentDashboard({ currentUser }) {
         {upcomingAssessments.length > 0 ? (
           <div className="assessments-list">
             {upcomingAssessments.map(a => (
-              <div key={a.id} className="assessment-card">
+              <div key={a.assessmentId} className="assessment-card">
                 <h3>{a.title}</h3>
-                <p><strong>Course:</strong> {a.courseId}</p>
+                <p><strong>Course:</strong> {a.courseCode} - {a.courseTitle}</p>
                 <p><strong>Type:</strong> {a.type}</p>
                 <p><strong>Due:</strong> {a.dueDate}</p>
+                <p><strong>Status:</strong> {a.status}</p>
               </div>
             ))}
           </div>
@@ -113,12 +123,12 @@ export default function StudentDashboard({ currentUser }) {
         <div className="courses-grid">
           {courses.length > 0 ? (
             courses.map(course => (
-              <div key={course.id} className="course-card">
+              <div key={course.courseId} className="course-card">
                 <h3>{course.title}</h3>
                 <p><strong>Code:</strong> {course.code}</p>
-                <p><strong>Instructor:</strong> {course.instructor}</p>
+                <p><strong>Grade:</strong> {course.currentGrade || 'N/A'}</p>
                 <p><strong>Credits:</strong> {course.credits}</p>
-                <button className="btn-secondary">View Course</button>
+                <button className="btn-secondary" onClick={() => onSelectCourse && onSelectCourse(course.courseId)}>View Course</button>
               </div>
             ))
           ) : (
