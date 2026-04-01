@@ -1,5 +1,5 @@
 // src/components/Admin/CourseManager.jsx
-export default function CourseManager({ courses = [], onToggleCourse, onDeleteCourse }) {
+export default function CourseManager({ courses = [], onToggleCourse, onDeleteCourse, onEditCourse }) {
 
   return (
     <div className="course-manager">
@@ -12,8 +12,10 @@ export default function CourseManager({ courses = [], onToggleCourse, onDeleteCo
             <th>Title</th>
             <th>Instructor</th>
             <th>Enrollment</th>
+            <th>Credits</th>
+            <th>Semester</th>
             <th>Status</th>
-              <th>Actions</th>
+            <th>Actions</th>
           </tr>
         </thead>
         <tbody>
@@ -23,6 +25,8 @@ export default function CourseManager({ courses = [], onToggleCourse, onDeleteCo
               <td>{course.title}</td>
               <td>{course.instructor}</td>
               <td>{course.enrollmentCount}/{course.maxCapacity}</td>
+              <td>{course.credits}</td>
+              <td>{course.semester || 'N/A'}</td>
               <td>
                 <span className={`status ${course.isActive ? 'active' : 'inactive'}`}>
                   {course.isActive ? 'Active' : 'Inactive'}
@@ -30,15 +34,23 @@ export default function CourseManager({ courses = [], onToggleCourse, onDeleteCo
               </td>
               <td>
                 <button
+                  className="btn-secondary"
+                  onClick={() => onEditCourse && onEditCourse(course._id || course.id)}
+                  style={{ marginRight: '0.5rem' }}
+                >
+                  Edit
+                </button>
+                <button
                   className="btn-toggle"
                   onClick={() => onToggleCourse(course._id || course.id)}
+                  style={{ marginRight: '0.5rem' }}
                 >
                   {course.isActive ? 'Disable' : 'Enable'}
                 </button>
                 <button
                   className="btn-secondary"
                   onClick={() => onDeleteCourse && onDeleteCourse(course._id || course.id)}
-                  style={{ marginLeft: '0.5rem' }}
+                  style={{ color: '#ef4444' }}
                 >
                   Delete
                 </button>

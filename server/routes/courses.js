@@ -146,23 +146,18 @@ router.delete('/:id', protect, authorize('admin', 'instructor'), async (req, res
       return res.status(403).json({ message: 'Access denied' });
     }
 
-    const assessments = await Assessment.find({ courseId: course._id }).select('_id');
-    const assessmentIds = assessments.map((a) => a._id);
-
+    // Cascade delete: enrollments, grades, assessments, then the course itself
     await Enrollment.deleteMany({ courseId: course._id });
     await Grade.deleteMany({ courseId: course._id });
     await Assessment.deleteMany({ courseId: course._id });
 
     await course.deleteOne();
 
+    // Remove course code from users' enrolledCourses arrays
     await User.updateMany(
       { enrolledCourses: course.code },
       { $pull: { enrolledCourses: course.code } }
     );
-
-    if (assessmentIds.length > 0) {
-      await Grade.deleteMany({ assessmentId: { $in: assessmentIds } });
-    }
 
     res.json({ message: 'Course removed' });
   } catch (error) {
@@ -228,6 +223,39 @@ router.delete('/:id/enroll', protect, authorize('student'), async (req, res) => 
     await Grade.deleteMany({ studentId: req.user._id, courseId: course._id });
 
     res.json({ message: 'Unenrolled successfully', courseId: course._id });
+  } catch (error) {
+    res.status(500).json({ message: 'Server error', error: error.message });
+  }
+});
+
+// GET /api/courses/:id/students  — instructor/admin: list enrolled students
+router.get('/:id/students', protect, authorize('admin', 'instructor'), async (req, res) => {
+  try {
+    const course = await Course.findById(req.params.id);
+    if (!course) return res.status(404).json({ message: 'Course not found' });
+
+    if (req.user.role === 'instructor' && course.instructor.toString() !== req.user._id.toString()) {
+      return res.status(403).json({ message: 'Access denied' });
+    }
+
+    const enrollments = await Enrollment.find({ courseId: course._id }).populate(
+      'studentId',
+      'firstName lastName email major gpa'
+    );
+
+    const students = enrollments
+      .filter((e) => e.studentId)
+      .map((e) => ({
+        _id: e.studentId._id,
+        firstName: e.studentId.firstName,
+        lastName: e.studentId.lastName,
+        email: e.studentId.email,
+        major: e.studentId.major,
+        gpa: e.studentId.gpa,
+        enrolledAt: e.enrolledAt,
+      }));
+
+    res.json(students);
   } catch (error) {
     res.status(500).json({ message: 'Server error', error: error.message });
   }

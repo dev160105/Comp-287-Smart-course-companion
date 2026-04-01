@@ -4,11 +4,14 @@ import Login from './components/Auth/Login';
 import Signup from './components/Auth/Signup';
 import StudentDashboard from './components/Student/Dashboard';
 import AdminDashboard from './components/Admin/Dashboard';
-import CircularProgress from './components/Student/ProgressVisualization';
+import ProgressVisualization from './components/Student/ProgressVisualization';
 import CourseList from './components/Student/CourseList';
 import AssessmentList from './components/Student/AssessmentList';
+import GradeEntryForm from './components/Student/GradeEntryForm';
 import CourseManager from './components/Admin/CourseManager';
 import CourseBuilder from './components/Admin/CourseBuilder';
+import AssessmentManager from './components/Admin/AssessmentManager';
+import GradeManager from './components/Admin/GradeManager';
 import CourseDetails from './components/Student/CourseDetails';
 import { getCurrentUser, logout, isStudent, isAdmin, isInstructor } from './utils/auth';
 import { loadCourses } from './utils/dataLoader';
@@ -61,7 +64,6 @@ export default function App() {
       await api.put(`/api/courses/${course._id || courseId}`, { isActive: !course.isActive });
       await fetchCourses();
     } catch (err) {
-      // Optimistic update fallback
       setAllCourses(prev =>
         prev.map(c => (c._id === courseId || c.id === courseId) ? { ...c, isActive: !c.isActive } : c)
       );
@@ -78,7 +80,6 @@ export default function App() {
   };
 
   useEffect(() => {
-    // Check if user is already logged in (persisted token)
     const user = getCurrentUser();
     if (user) {
       setCurrentUser(user);
@@ -155,19 +156,22 @@ export default function App() {
         <div className="nav-center">
           {isStudent(currentUser) && (
             <>
-              <button onClick={() => handleNavigate('dashboard')} className="nav-link">Dashboard</button>
-              <button onClick={() => handleNavigate('courses')} className="nav-link">Courses</button>
-              <button onClick={() => handleNavigate('assessments')} className="nav-link">Assessments</button>
-              <button onClick={() => handleNavigate('progress')} className="nav-link">Progress</button>
-              <button onClick={toggleDarkMode} className="nav-button">{isDarkMode ? 'Light' : 'Dark'}</button>
+              <button onClick={() => handleNavigate('dashboard')} className={`nav-link ${currentPage === 'dashboard' ? 'active' : ''}`}>Dashboard</button>
+              <button onClick={() => handleNavigate('courses')} className={`nav-link ${currentPage === 'courses' || currentPage === 'course-details' ? 'active' : ''}`}>Courses</button>
+              <button onClick={() => handleNavigate('assessments')} className={`nav-link ${currentPage === 'assessments' ? 'active' : ''}`}>Assessments</button>
+              <button onClick={() => handleNavigate('grades')} className={`nav-link ${currentPage === 'grades' ? 'active' : ''}`}>Grades</button>
+              <button onClick={() => handleNavigate('progress')} className={`nav-link ${currentPage === 'progress' ? 'active' : ''}`}>Progress</button>
+              <button onClick={toggleDarkMode} className="nav-button">{isDarkMode ? '☀️ Light' : '🌙 Dark'}</button>
             </>
           )}
           {(isAdmin(currentUser) || isInstructor(currentUser)) && (
             <>
-              <button onClick={() => handleNavigate('dashboard')} className="nav-link">Dashboard</button>
-              <button onClick={() => handleNavigate('course-manager')} className="nav-link">Manage Courses</button>
-              <button onClick={() => handleNavigate('course-builder')} className="nav-link">Build Course</button>
-              <button onClick={toggleDarkMode} className="nav-button">{isDarkMode ? 'Light' : 'Dark'}</button>
+              <button onClick={() => handleNavigate('dashboard')} className={`nav-link ${currentPage === 'dashboard' ? 'active' : ''}`}>Dashboard</button>
+              <button onClick={() => handleNavigate('course-manager')} className={`nav-link ${currentPage === 'course-manager' ? 'active' : ''}`}>Courses</button>
+              <button onClick={() => handleNavigate('course-builder')} className={`nav-link ${currentPage === 'course-builder' ? 'active' : ''}`}>New Course</button>
+              <button onClick={() => handleNavigate('assessment-manager')} className={`nav-link ${currentPage === 'assessment-manager' ? 'active' : ''}`}>Assessments</button>
+              <button onClick={() => handleNavigate('grade-manager')} className={`nav-link ${currentPage === 'grade-manager' ? 'active' : ''}`}>Grades</button>
+              <button onClick={toggleDarkMode} className="nav-button">{isDarkMode ? '☀️ Light' : '🌙 Dark'}</button>
             </>
           )}
         </div>
@@ -180,12 +184,34 @@ export default function App() {
       <main className="main-content">
         {isStudent(currentUser) && (
           <>
-            {currentPage === 'dashboard' && <StudentDashboard currentUser={currentUser} onSelectCourse={(id) => { setSelectedCourseId(id); setCurrentPage('course-details'); }} />}
-            {currentPage === 'courses' && <CourseList courses={allCourses} onRefresh={fetchCourses} onSelectCourse={(id) => { setSelectedCourseId(id); setCurrentPage('course-details'); }} />}
-            {currentPage === 'course-details' && <CourseDetails course={allCourses.find(c => (c._id || c.id) === selectedCourseId)} onBack={() => setCurrentPage('courses')} />}
-            {currentPage === 'assessments' && <AssessmentList currentUser={currentUser} />}
+            {currentPage === 'dashboard' && (
+              <StudentDashboard
+                currentUser={currentUser}
+                onSelectCourse={(id) => { setSelectedCourseId(id); setCurrentPage('course-details'); }}
+              />
+            )}
+            {currentPage === 'courses' && (
+              <CourseList
+                courses={allCourses}
+                onRefresh={fetchCourses}
+                onSelectCourse={(id) => { setSelectedCourseId(id); setCurrentPage('course-details'); }}
+              />
+            )}
+            {currentPage === 'course-details' && (
+              <CourseDetails
+                course={allCourses.find(c => (c._id || c.id) === selectedCourseId)}
+                onBack={() => setCurrentPage('courses')}
+                currentUser={currentUser}
+              />
+            )}
+            {currentPage === 'assessments' && (
+              <AssessmentList currentUser={currentUser} />
+            )}
+            {currentPage === 'grades' && (
+              <GradeEntryForm currentUser={currentUser} />
+            )}
             {currentPage === 'progress' && (
-              <CircularProgress
+              <ProgressVisualization
                 currentUser={currentUser}
                 courses={allCourses}
               />
@@ -195,9 +221,36 @@ export default function App() {
 
         {(isAdmin(currentUser) || isInstructor(currentUser)) && (
           <>
-            {currentPage === 'dashboard' && <AdminDashboard currentUser={currentUser} courses={allCourses} onNavigate={handleNavigate} />}
-            {currentPage === 'course-manager' && <CourseManager courses={allCourses} onToggleCourse={handleToggleCourse} onDeleteCourse={handleDeleteCourse} />}
-            {currentPage === 'course-builder' && <CourseBuilder onSaveCourse={handleSaveCourse} />}
+            {currentPage === 'dashboard' && (
+              <AdminDashboard
+                currentUser={currentUser}
+                courses={allCourses}
+                onNavigate={handleNavigate}
+              />
+            )}
+            {currentPage === 'course-manager' && (
+              <CourseManager
+                courses={allCourses}
+                onToggleCourse={handleToggleCourse}
+                onDeleteCourse={handleDeleteCourse}
+                onEditCourse={(id) => { setSelectedCourseId(id); setCurrentPage('course-builder-edit'); }}
+              />
+            )}
+            {currentPage === 'course-builder' && (
+              <CourseBuilder onSaveCourse={handleSaveCourse} />
+            )}
+            {currentPage === 'course-builder-edit' && (
+              <CourseBuilder
+                onSaveCourse={handleSaveCourse}
+                editCourse={allCourses.find(c => (c._id || c.id) === selectedCourseId)}
+              />
+            )}
+            {currentPage === 'assessment-manager' && (
+              <AssessmentManager courses={allCourses} />
+            )}
+            {currentPage === 'grade-manager' && (
+              <GradeManager courses={allCourses} />
+            )}
           </>
         )}
       </main>

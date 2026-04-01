@@ -141,6 +141,7 @@ async function seed() {
       assessmentId: assessmentMap[g.assessmentLegacy],
       courseId:     assessment.courseId,
       score:        g.score,
+      status:       'completed',
       submittedAt:  new Date(g.submittedAt),
     });
   }
