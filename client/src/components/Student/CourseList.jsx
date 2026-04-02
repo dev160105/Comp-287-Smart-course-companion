@@ -70,7 +70,7 @@ export default function CourseList({ courses = [], onSelectCourse, onRefresh }) 
                 <td>
                   <button
                     className="btn-primary"
-                    disabled={busyCourseId === (course._id || course.id) || !course.isActive}
+                    disabled={busyCourseId === (course._id || course.id)}
                     onClick={() => handleEnrollToggle(course)}
                   >
                     {course.isEnrolled ? 'Unenroll' : 'Enroll'}

@@ -14,7 +14,7 @@ export default function AssessmentList({ currentUser }) {
     loadAssessments().then(setAssessments).catch(console.error);
   }, []);
 
-  const filteredAssessments = filter === 'open' 
+  const filteredAssessments = filter === 'open'
     ? assessments.filter(a => a.status === 'open')
     : filter === 'upcoming'
     ? assessments.filter(a => a.status === 'upcoming')
@@ -29,6 +29,14 @@ export default function AssessmentList({ currentUser }) {
     quiz: '#10b981',
     exam: '#ef4444',
     project: '#f59e0b',
+    lab: '#8b5cf6',
+  };
+
+  const openModal = (assessment) => {
+    setSelectedAssessment(assessment);
+    setScore(assessment.studentScore !== null && assessment.studentScore !== undefined ? assessment.studentScore : '');
+    setFeedback(assessment.studentFeedback || '');
+    setMessage('');
   };
 
   const updateStudentStatus = async (assessment, nextStatus) => {
@@ -36,7 +44,7 @@ export default function AssessmentList({ currentUser }) {
     try {
       await upsertStudentAssessment(assessment.id, {
         status: nextStatus,
-        score: nextStatus === 'completed' && score !== '' ? Number(score) : null,
+        score: score !== '' ? Number(score) : null,
         feedback,
       });
 
@@ -45,12 +53,12 @@ export default function AssessmentList({ currentUser }) {
           ? {
               ...a,
               studentStatus: nextStatus,
-              studentScore: nextStatus === 'completed' && score !== '' ? Number(score) : null,
+              studentScore: score !== '' ? Number(score) : a.studentScore,
               studentFeedback: feedback,
             }
           : a
       ));
-      setMessage(`Assessment marked as ${nextStatus}`);
+      setMessage(`✓ Assessment marked as ${nextStatus}`);
       setSelectedAssessment(null);
       setScore('');
       setFeedback('');
@@ -60,94 +68,133 @@ export default function AssessmentList({ currentUser }) {
   };
 
   return (
-    <div className="assessment-list">
-      <h1>My Assessments</h1>
-      {message && <p className="info-text">{message}</p>}
-      
-      <div className="filter-controls">
-        <label htmlFor="status-filter">Filter:</label>
-        <select id="status-filter" value={filter} onChange={(e) => setFilter(e.target.value)}>
-          <option value="all">All</option>
-          <option value="open">Open</option>
-          <option value="upcoming">Upcoming</option>
-          <option value="pending">Pending</option>
-          <option value="completed">Completed</option>
-        </select>
+    <div className="page-container">
+      <div className="page-header">
+        <h1>My Assessments</h1>
+        <p className="page-subtitle">Track and manage your assessment progress</p>
       </div>
 
-      <div className="assessments-list">
+      {message && <div className="alert alert-success">{message}</div>}
+
+      <div className="filter-bar">
+        <span className="filter-label">Filter:</span>
+        <div className="filter-tabs">
+          {['all', 'open', 'upcoming', 'pending', 'completed'].map(f => (
+            <button
+              key={f}
+              className={`filter-tab ${filter === f ? 'active' : ''}`}
+              onClick={() => setFilter(f)}
+            >
+              {f.charAt(0).toUpperCase() + f.slice(1)}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      <div className="cards-grid">
         {filteredAssessments.length > 0 ? (
           filteredAssessments.map(assessment => (
-            <div key={assessment.id} className="assessment-card">
-              <div className="assessment-header">
-                <h3>{assessment.title}</h3>
-                <span className={`status-badge ${assessment.status}`}>{assessment.status}</span>
+            <div
+              key={assessment.id}
+              className="ac-card"
+              style={{ borderLeftColor: typeColors[assessment.type] || '#2563eb' }}
+            >
+              <div className="ac-header">
+                <h3 className="ac-title">{assessment.title}</h3>
+                <span className={`badge badge-${assessment.status}`}>{assessment.status}</span>
               </div>
-              <p><strong>Type:</strong> {assessment.type}</p>
-              <p><strong>Course:</strong> {assessment.courseCode || assessment.courseId}</p>
-              <p><strong>Due Date:</strong> {assessment.dueDate}</p>
-              <p><strong>Max Points:</strong> {assessment.maxPoints}</p>
-              <p><strong>My Status:</strong> {assessment.studentStatus || 'pending'}</p>
-              <button className="btn-primary" onClick={() => setSelectedAssessment(assessment)}>View Assessment</button>
+
+              <div className="ac-meta">
+                <div className="ac-meta-item">
+                  <span className="ac-meta-label">Course</span>
+                  <span className="ac-meta-value">{assessment.courseCode || assessment.courseId}</span>
+                </div>
+                <div className="ac-meta-item">
+                  <span className="ac-meta-label">Type</span>
+                  <span className="ac-meta-value" style={{ textTransform: 'capitalize' }}>{assessment.type}</span>
+                </div>
+                <div className="ac-meta-item">
+                  <span className="ac-meta-label">Due</span>
+                  <span className="ac-meta-value">{assessment.dueDate || 'N/A'}</span>
+                </div>
+                <div className="ac-meta-item">
+                  <span className="ac-meta-label">Score</span>
+                  <span className="ac-meta-value ac-score">
+                    {assessment.studentScore !== null && assessment.studentScore !== undefined
+                      ? `${assessment.studentScore} / ${assessment.maxPoints}`
+                      : `— / ${assessment.maxPoints}`}
+                  </span>
+                </div>
+              </div>
+
+              <div className="ac-footer">
+                <span className={`badge badge-progress-${assessment.studentStatus || 'pending'}`}>
+                  {assessment.studentStatus || 'pending'}
+                </span>
+                <button className="btn-sm btn-primary" onClick={() => openModal(assessment)}>
+                  Update
+                </button>
+              </div>
             </div>
           ))
         ) : (
-          <p>No assessments match your filter.</p>
+          <div className="empty-state">No assessments match your filter.</div>
         )}
       </div>
 
       {selectedAssessment && (
-        <div className="assessment-modal-overlay" onClick={() => setSelectedAssessment(null)}>
-          <div className="assessment-modal" onClick={(e) => e.stopPropagation()}>
-            <div className="modal-header" style={{ borderLeft: `5px solid ${typeColors[selectedAssessment.type] || '#2563eb'}` }}>
+        <div className="modal-overlay" onClick={() => setSelectedAssessment(null)}>
+          <div className="modal-box" onClick={(e) => e.stopPropagation()}>
+            <div className="modal-top" style={{ borderLeftColor: typeColors[selectedAssessment.type] || '#2563eb' }}>
               <h2>{selectedAssessment.title}</h2>
-              <button className="modal-close-btn" onClick={() => setSelectedAssessment(null)}>✕</button>
+              <button className="modal-close" onClick={() => setSelectedAssessment(null)}>✕</button>
             </div>
-            <div className="modal-body">
-              <div className="modal-info-grid">
-                <div className="modal-info-item">
-                  <span className="modal-label">Type</span>
-                  <span className="modal-value" style={{ textTransform: 'capitalize' }}>{selectedAssessment.type}</span>
+
+            <div className="modal-body-content">
+              <div className="info-grid">
+                <div className="info-cell">
+                  <span className="info-label">TYPE</span>
+                  <span className="info-value" style={{ textTransform: 'capitalize' }}>{selectedAssessment.type}</span>
                 </div>
-                <div className="modal-info-item">
-                  <span className="modal-label">Course</span>
-                  <span className="modal-value">{selectedAssessment.courseCode || selectedAssessment.courseId}</span>
+                <div className="info-cell">
+                  <span className="info-label">COURSE</span>
+                  <span className="info-value">{selectedAssessment.courseCode || selectedAssessment.courseId}</span>
                 </div>
-                <div className="modal-info-item">
-                  <span className="modal-label">Due Date</span>
-                  <span className="modal-value">{selectedAssessment.dueDate}</span>
+                <div className="info-cell">
+                  <span className="info-label">DUE DATE</span>
+                  <span className="info-value">{selectedAssessment.dueDate || 'N/A'}</span>
                 </div>
-                <div className="modal-info-item">
-                  <span className="modal-label">Max Points</span>
-                  <span className="modal-value">{selectedAssessment.maxPoints}</span>
+                <div className="info-cell">
+                  <span className="info-label">MAX POINTS</span>
+                  <span className="info-value">{selectedAssessment.maxPoints}</span>
                 </div>
-                <div className="modal-info-item">
-                  <span className="modal-label">Status</span>
-                  <span className="modal-value status-badge">{selectedAssessment.status}</span>
+                <div className="info-cell">
+                  <span className="info-label">STATUS</span>
+                  <span className={`badge badge-${selectedAssessment.status}`}>{selectedAssessment.status}</span>
                 </div>
-                <div className="modal-info-item">
-                  <span className="modal-label">My Progress</span>
-                  <span className="modal-value">{selectedAssessment.studentStatus || 'pending'}</span>
+                <div className="info-cell">
+                  <span className="info-label">MY PROGRESS</span>
+                  <span className={`badge badge-progress-${selectedAssessment.studentStatus || 'pending'}`}>
+                    {selectedAssessment.studentStatus || 'pending'}
+                  </span>
                 </div>
               </div>
 
-              <div className="form-group" style={{ marginTop: '1rem' }}>
-                <label htmlFor="earned-score">Earned Marks (optional):</label>
+              <div className="form-group">
+                <label>Earned Marks (optional)</label>
                 <input
-                  id="earned-score"
                   type="number"
                   min="0"
                   max={selectedAssessment.maxPoints}
                   value={score}
                   onChange={(e) => setScore(e.target.value)}
-                  placeholder={`0 - ${selectedAssessment.maxPoints}`}
+                  placeholder={`0 – ${selectedAssessment.maxPoints}`}
                 />
               </div>
 
               <div className="form-group">
-                <label htmlFor="assessment-feedback">Notes:</label>
+                <label>Notes</label>
                 <textarea
-                  id="assessment-feedback"
                   rows="3"
                   value={feedback}
                   onChange={(e) => setFeedback(e.target.value)}
@@ -155,15 +202,24 @@ export default function AssessmentList({ currentUser }) {
                 />
               </div>
 
-              <div className="modal-description">
-                <span className="modal-label">Description</span>
-                <p>{selectedAssessment.description || 'No description available.'}</p>
-              </div>
+              {selectedAssessment.description && (
+                <div className="modal-desc">
+                  <span className="info-label">DESCRIPTION</span>
+                  <p>{selectedAssessment.description}</p>
+                </div>
+              )}
             </div>
-            <div className="modal-footer">
-              <button className="btn-primary" onClick={() => updateStudentStatus(selectedAssessment, 'completed')}>Mark Completed</button>
-              <button className="btn-secondary" onClick={() => updateStudentStatus(selectedAssessment, 'pending')}>Mark Pending</button>
-              <button className="btn-secondary" onClick={() => setSelectedAssessment(null)}>Close</button>
+
+            <div className="modal-actions">
+              <button className="btn btn-success" onClick={() => updateStudentStatus(selectedAssessment, 'completed')}>
+                Mark Completed
+              </button>
+              <button className="btn btn-secondary" onClick={() => updateStudentStatus(selectedAssessment, 'pending')}>
+                Mark Pending
+              </button>
+              <button className="btn btn-ghost" onClick={() => setSelectedAssessment(null)}>
+                Close
+              </button>
             </div>
           </div>
         </div>

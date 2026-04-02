@@ -1,979 +1,130 @@
-/* src/App.css */
-/* Additional App-specific styles */
+/* src/App.css — component-level styles */
 
-.app-container {
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-}
-
+.app-container { min-height: 100vh; display: flex; flex-direction: column; }
 .app-container.auth-container {
-  flex-direction: row;
-  justify-content: center;
-  align-items: center;
+  flex-direction: row; justify-content: center; align-items: center;
 }
+.main-content { flex: 1; overflow-y: auto; }
 
-/* (login styles live in index.css per hsk1006's original implementation) */
+/* ── Typography helpers ──────────────────────────────────── */
+h1 { font-size: 1.65rem; font-weight: 700; margin-bottom: 1.25rem; }
+h2 { font-size: 1.3rem;  font-weight: 600; margin-bottom: 1rem; }
+h3 { font-size: 1.05rem; font-weight: 600; }
+section { margin-bottom: 2rem; }
+section h2 { border-bottom: 2px solid var(--primary); padding-bottom: .5rem; }
 
-/* ─── placeholder: unused ─────────────────────────────── */
-.login-role-picker-unused {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  min-height: 100vh;
-  width: 100%;
-  padding: 2rem;
-  background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
-}
-
-.login-logo {
-  text-align: center;
-  margin-bottom: 3rem;
-  color: #fff;
-}
-
-.login-logo-icon {
-  font-size: 4rem;
-  display: block;
-  margin-bottom: 1rem;
-}
-
-.login-logo h1 {
-  font-size: 2.2rem;
-  font-weight: 700;
-  color: #fff;
-  margin-bottom: 0.5rem;
-}
-
-.login-logo p {
-  color: rgba(255,255,255,0.7);
-  font-size: 1.1rem;
-}
-
-.role-cards {
-  display: flex;
-  gap: 2rem;
-  flex-wrap: wrap;
-  justify-content: center;
-}
-
-.role-card {
-  background: rgba(255,255,255,0.07);
-  border: 2px solid rgba(255,255,255,0.15);
-  border-radius: 1rem;
-  padding: 2.5rem 2rem;
-  width: 260px;
-  text-align: center;
-  cursor: pointer;
-  transition: all 0.25s ease;
-  color: #fff;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 0.5rem;
-  position: relative;
-  overflow: hidden;
-}
-
-.role-card:hover {
-  transform: translateY(-6px);
-  border-color: rgba(255,255,255,0.5);
-  background: rgba(255,255,255,0.13);
-}
-
-.student-card:hover { border-color: #4ade80; box-shadow: 0 8px 30px rgba(74,222,128,0.2); }
-.admin-card:hover   { border-color: #818cf8; box-shadow: 0 8px 30px rgba(129,140,248,0.2); }
-
-.role-icon { font-size: 3rem; margin-bottom: 0.5rem; }
-
-.role-card h2 {
-  font-size: 1.3rem;
-  font-weight: 700;
-  color: #fff;
-  margin: 0;
-}
-
-.role-card p {
-  font-size: 0.9rem;
-  color: rgba(255,255,255,0.65);
-  margin: 0;
-}
-
-.role-arrow {
-  font-size: 1.4rem;
-  margin-top: 1rem;
-  opacity: 0.6;
-}
-
-/* ─── Login Form ─────────────────────────────────────── */
-.login-container {
-  background: var(--surface);
-  padding: 2.5rem;
-  border-radius: 1rem;
-  box-shadow: var(--shadow-md);
-  width: 100%;
-  max-width: 420px;
-  position: relative;
-}
-
-.login-container.admin-login {
-  border-top: 4px solid #818cf8;
-}
-
-.login-container.student-login {
-  border-top: 4px solid #4ade80;
-}
-
-.back-button {
-  background: none;
-  border: none;
-  color: var(--text-secondary);
-  cursor: pointer;
-  font-size: 0.9rem;
-  padding: 0;
-  margin-bottom: 1.5rem;
-  display: inline-flex;
-  align-items: center;
-  gap: 0.25rem;
-  transition: color 0.2s;
-}
-
-.back-button:hover { color: var(--primary-color); }
-
-.login-header { text-align: center; margin-bottom: 1.75rem; }
-
-.login-role-badge {
-  display: inline-block;
-  padding: 0.3rem 1rem;
-  border-radius: 999px;
-  font-size: 0.8rem;
-  font-weight: 600;
-  margin-bottom: 0.75rem;
-  background: var(--primary-light);
-  color: var(--primary-color);
-}
-
-.student-login .login-role-badge { background: rgba(74,222,128,0.15); color: #16a34a; }
-.admin-login  .login-role-badge  { background: rgba(129,140,248,0.15); color: #6366f1; }
-
-.login-header h1 { font-size: 1.5rem; margin-bottom: 0.25rem; }
-.login-subtitle   { color: var(--text-secondary); font-size: 0.9rem; margin: 0; }
-
-.login-form .form-group { margin-bottom: 1.25rem; }
-
-.login-form label {
-  display: block;
-  font-weight: 500;
-  margin-bottom: 0.4rem;
-  font-size: 0.9rem;
-}
-
-.login-form input {
-  width: 100%;
-  padding: 0.7rem 0.9rem;
-  border: 1px solid var(--border);
-  border-radius: 0.5rem;
-  font-size: 0.95rem;
-  background: var(--background);
-  color: var(--text-primary);
-  transition: border-color 0.2s;
-  box-sizing: border-box;
-}
-
-.login-form input:focus {
-  outline: none;
-  border-color: var(--primary-color);
-}
-
-.btn-login {
-  width: 100%;
-  padding: 0.8rem;
-  border: none;
-  border-radius: 0.5rem;
-  font-size: 1rem;
-  font-weight: 600;
-  cursor: pointer;
-  margin-top: 0.5rem;
-  transition: opacity 0.2s, transform 0.1s;
-  color: #fff;
-}
-
-.btn-login:hover  { opacity: 0.9; transform: translateY(-1px); }
-.btn-login:active { transform: translateY(0); }
-.btn-login:disabled { opacity: 0.6; cursor: not-allowed; }
-
-.btn-student { background: linear-gradient(135deg, #22c55e, #16a34a); }
-.btn-admin   { background: linear-gradient(135deg, #818cf8, #6366f1); }
-
-.demo-info {
-  margin-top: 1.5rem;
-  padding: 1rem;
-  background: var(--background);
-  border-radius: 0.5rem;
-  font-size: 0.82rem;
-  color: var(--text-secondary);
-  text-align: center;
-}
-
-.demo-info p { margin: 0.25rem 0; }
-
-.main-content {
-  flex: 1;
-  overflow-y: auto;
-}
-
-h1, h2, h3, h4, h5, h6 {
-  margin-bottom: 1rem;
-  color: var(--text-primary);
-}
-
-h1 {
-  font-size: 2rem;
-  font-weight: 700;
-  margin-bottom: 1.5rem;
-}
-
-h2 {
-  font-size: 1.5rem;
-  font-weight: 600;
-  margin-bottom: 1.25rem;
-}
-
-h3 {
-  font-size: 1.25rem;
-  font-weight: 600;
-}
-
-section {
-  margin-bottom: 2rem;
-}
-
-section h2 {
-  border-bottom: 2px solid var(--primary-color);
-  padding-bottom: 0.5rem;
-}
-
-/* Course List Specific */
-.course-list {
-  background: var(--surface);
-  padding: 2rem;
-  border-radius: 0.5rem;
-  box-shadow: var(--shadow-sm);
-}
-
-.courses-table {
-  overflow-x: auto;
-}
-
-/* Course Details */
-.course-details {
-  background: var(--surface);
-  padding: 2rem;
-  border-radius: 0.5rem;
-  box-shadow: var(--shadow-sm);
-}
-
-.course-info {
-  background-color: var(--surface);
-  padding: 1.5rem;
-  border-radius: 0.375rem;
-  margin-bottom: 2rem;
-}
-
-.info-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: 1rem;
-}
-
-.info-item {
-  background: var(--surface);
-  color: var(--text-primary);
-  padding: 1rem;
-  border-radius: 0.375rem;
-  border: 1px solid var(--border);
-}
-
-.course-description {
-  margin-bottom: 2rem;
-  padding: 1.5rem;
-  background-color: var(--surface);
-  color: var(--text-primary);
-  border-radius: 0.375rem;
-  border: 1px solid var(--border);
-}
-
-.course-assessments {
-  background-color: var(--surface);
-  color: var(--text-primary);
-  padding: 1.5rem;
-  border-radius: 0.375rem;
-  border: 1px solid var(--border);
-}
-
-.course-assessments ul {
-  list-style: none;
-  padding: 0;
-}
-
-.assessment-list {
-  background: var(--surface);
-  padding: 2rem;
-  border-radius: 0.5rem;
-  box-shadow: var(--shadow-sm);
-}
-
-.assessments-list {
-  margin-top: 1.5rem;
-}
-
-/* Grade Entry Form */
-.grade-entry-form {
-  background: var(--surface);
-  color: var(--text-primary);
-  padding: 2rem;
-  border-radius: 0.5rem;
-  box-shadow: var(--shadow-sm);
-}
-
-/* Assessment Manager */
-.assessment-manager {
-  background: var(--surface);
-  color: var(--text-primary);
-  padding: 2rem;
-  border-radius: 0.5rem;
-  box-shadow: var(--shadow-sm);
-}
-
-/* Grade Manager */
+/* ── Assessment Manager ──────────────────────────────────── */
+.assessment-manager,
 .grade-manager {
   background: var(--surface);
-  color: var(--text-primary);
-  padding: 2rem;
-  border-radius: 0.5rem;
+  border-radius: var(--radius-lg);
   box-shadow: var(--shadow-sm);
+  border: 1px solid var(--border);
+  padding: 1.75rem;
 }
 
-.course-form {
-  background: var(--surface);
-  color: var(--text-primary);
-  padding: 2rem;
-  border-radius: 0.5rem;
-  box-shadow: var(--shadow-sm);
-}
+/* ── Status badge extras ─────────────────────────────────── */
+.status-badge.completed { background: var(--success-light); color: var(--success); }
+.status-badge.pending   { background: var(--warning-light); color: var(--warning); }
 
-/* Course Builder */
-.course-builder {
-  background: var(--surface);
-  color: var(--text-primary);
-  padding: 2rem;
-  border-radius: 0.5rem;
-  box-shadow: var(--shadow-sm);
-}
+/* ── Active nav link ─────────────────────────────────────── */
+.nav-link.active { background: rgba(255,255,255,.2); font-weight: 600; }
 
-.course-saved-banner {
-  background: #d1fae5;
-  color: #065f46;
-  border: 1px solid #6ee7b7;
-  border-radius: 0.375rem;
-  padding: 0.875rem 1.25rem;
-  margin-bottom: 1.5rem;
-  font-size: 0.95rem;
-  animation: fadeIn 0.3s ease;
-}
+/* ── Form row ────────────────────────────────────────────── */
+.form-row { display: flex; gap: 1.25rem; flex-wrap: wrap; }
+.form-row .form-group { flex: 1; min-width: 200px; }
 
-/* Course Manager */
-.course-manager {
-  background: var(--surface);
-  padding: 2rem;
-  border-radius: 0.5rem;
-  box-shadow: var(--shadow-sm);
-}
+/* ── Info text ───────────────────────────────────────────── */
+.info-text { color: var(--success); font-weight: 500; font-size: .875rem; margin-bottom: .75rem; }
 
-.course-management-table {
-  margin-top: 1.5rem;
-}
-
-/* Progress Visualization */
-.progress-visualization {
-  background: var(--surface);
-  padding: 2rem;
-  border-radius: 0.5rem;
-  box-shadow: var(--shadow-sm);
-}
-
-.progress-content {
-  margin-top: 2rem;
-}
-
-.grades-overview {
-  margin-bottom: 2rem;
-}
-
-.bar-container {
-  display: flex;
-  flex-direction: column;
-  height: 100%;
-  flex: 1;
-  align-items: center;
-}
-
-.progress-bars {
-  background-color: #f9fafb;
-  padding: 1.5rem;
-  border-radius: 0.375rem;
-}
-
-/* Admin Actions */
-.admin-actions {
-  background: var(--surface);
-  padding: 1.5rem;
-  border-radius: 0.5rem;
-  box-shadow: var(--shadow-sm);
-}
-
-.action-buttons {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.75rem;
-  margin-top: 1rem;
-}
-
-.btn-primary.panel-active {
-  background-color: #1d4ed8;
-  box-shadow: inset 0 2px 4px rgba(0,0,0,0.2);
-}
-
-/* Admin Panels */
-.admin-panel {
-  background: var(--surface);
-  padding: 1.5rem;
-  border-radius: 0.5rem;
-  box-shadow: var(--shadow-sm);
-  animation: fadeIn 0.25s ease;
-}
-
-.panel-table-wrapper {
-  overflow-x: auto;
-  margin-top: 1rem;
-}
-
-.panel-table {
-  width: 100%;
-  border-collapse: collapse;
-  font-size: 0.9rem;
-}
-
-.panel-table th {
-  background: var(--background);
-  color: var(--text-secondary);
-  font-size: 0.75rem;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  padding: 0.75rem 1rem;
-  text-align: left;
-  border-bottom: 2px solid var(--border);
-}
-
-.panel-table td {
-  padding: 0.75rem 1rem;
-  border-bottom: 1px solid var(--border);
-  color: var(--text-primary);
-}
-
-.panel-table tr:last-child td {
-  border-bottom: none;
-}
-
-.panel-table tr:hover td {
-  background: var(--background);
-}
-
-.role-badge {
-  display: inline-block;
-  padding: 0.2rem 0.6rem;
-  border-radius: 9999px;
-  color: white;
-  font-size: 0.75rem;
-  font-weight: 600;
-  text-transform: capitalize;
-}
-
-.settings-grid {
+/* ── Progress visualization ──────────────────────────────── */
+.course-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
   gap: 1.25rem;
   margin-top: 1rem;
 }
-
-.setting-item {
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-}
-
-.setting-item h4 {
-  font-size: 0.85rem;
-  color: var(--text-secondary);
-  text-transform: uppercase;
-  letter-spacing: 0.04em;
-  margin: 0;
-}
-
-.setting-item input[type="number"],
-.setting-item select {
-  padding: 0.5rem 0.75rem;
+.course-progress-card {
+  background: var(--surface);
   border: 1px solid var(--border);
-  border-radius: 0.375rem;
-  background: var(--background);
-  color: var(--text-primary);
-  font-size: 0.95rem;
-}
-
-.setting-item input[type="checkbox"] {
-  width: 1.2rem;
-  height: 1.2rem;
-  cursor: pointer;
-}
-
-.recent-activity {
-  background: var(--surface);
-  padding: 1.5rem;
-  border-radius: 0.5rem;
+  border-radius: var(--radius-lg);
+  padding: 1.25rem;
   box-shadow: var(--shadow-sm);
-  color: var(--text-secondary);
+}
+.course-progress-card h3 { font-size: .95rem; margin-bottom: .75rem; color: var(--text); }
+
+/* ── Course detail ───────────────────────────────────────── */
+.course-detail { background: var(--surface); border-radius: var(--radius-lg); border: 1px solid var(--border); padding: 1.75rem; box-shadow: var(--shadow-sm); }
+.course-detail table { margin-top: 1rem; }
+
+/* ── Grade entry table ───────────────────────────────────── */
+.grade-entry-table input[type="number"] {
+  width: 80px; padding: .35rem .5rem; font-size: .85rem;
+  border: 1.5px solid var(--border); border-radius: var(--radius);
+  background: var(--surface); color: var(--text);
+}
+.grade-entry-table input[type="number"]:focus {
+  outline: none; border-color: var(--primary); box-shadow: 0 0 0 2px rgba(37,99,235,.1);
 }
 
-/* Loading and Empty States */
-.loading {
-  text-align: center;
-  padding: 2rem;
-  color: var(--text-secondary);
+/* ── Course list (student) ───────────────────────────────── */
+.course-list { background: var(--surface); padding: 1.75rem; border-radius: var(--radius-lg); box-shadow: var(--shadow-sm); border: 1px solid var(--border); }
+.courses-table { overflow-x: auto; }
+
+/* ── Assessment list (student) ───────────────────────────── */
+.assessment-list { background: var(--surface); padding: 1.75rem; border-radius: var(--radius-lg); box-shadow: var(--shadow-sm); border: 1px solid var(--border); }
+.assessments-list { margin-top: 1rem; }
+
+/* ── Dark mode fixes for specific elements ───────────────── */
+body.dark-theme .btn-secondary {
+  background: var(--surface-2);
+  color: var(--text-2);
+  border-color: var(--border);
 }
+body.dark-theme .btn-secondary:hover { background: var(--border); color: var(--text); }
 
-.empty-state {
-  text-align: center;
-  padding: 3rem 1rem;
-  color: var(--text-secondary);
-  background-color: #f9fafb;
-  border-radius: 0.375rem;
-  border: 2px dashed var(--border);
-}
+body.dark-theme table       { background: var(--surface); }
+body.dark-theme thead       { background: var(--surface-2); }
+body.dark-theme tbody tr:hover { background: rgba(255,255,255,.04); }
 
-.empty-state h3 {
-  margin-bottom: 0.5rem;
-  color: var(--text-primary);
-}
+body.dark-theme .filter-controls select,
+body.dark-theme .filter-controls input { background: var(--surface); color: var(--text); border-color: var(--border); }
 
-.nav-button, button {
-  border: 2px solid var(--primary-color);
-  background-color: transparent;
-  color: var(--primary-color);
-  padding: 0.5rem 1rem;
-  border-radius: 0.375rem;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  font-weight: 600;
-}
+body.dark-theme .modal-box,
+body.dark-theme .assessment-modal { background: var(--surface); border-color: var(--border); }
 
-.nav-button:hover, button:hover {
-  transform: scale(1.1);
-  background-color: var(--primary-color);
-  color: white;
-  box-shadow: var(--shadow-md);
-}
+body.dark-theme .info-grid,
+body.dark-theme .modal-info-grid { background: var(--surface-2); border-color: var(--border); }
 
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(10px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
+body.dark-theme .demo-info    { background: var(--surface-2); border-color: var(--border); }
+body.dark-theme .role-btn     { background: var(--surface-2); color: var(--text); border-color: var(--border); }
+body.dark-theme .login-container { background: var(--surface); }
 
-.main-content > * {
-  animation: fadeIn 0.5s ease;
-}
+body.dark-theme .summary-card,
+body.dark-theme .stat-card,
+body.dark-theme .ac-card,
+body.dark-theme .course-card,
+body.dark-theme .grade-card,
+body.dark-theme .assessment-card,
+body.dark-theme .section-card,
+body.dark-theme .assessment-manager,
+body.dark-theme .grade-manager,
+body.dark-theme .course-list,
+body.dark-theme .assessment-list,
+body.dark-theme .course-detail { background: var(--surface); border-color: var(--border); }
 
-/* Fix for Login/Signup visibility in Dark Mode */
-body.dark-theme .auth-container > div {
-  background-color: var(--surface) !important;
-  color: var(--text-primary) !important;
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
-}
+body.dark-theme .filter-tab   { background: var(--surface); border-color: var(--border); color: var(--text-2); }
+body.dark-theme .filter-tab:hover { border-color: var(--primary); color: var(--primary); }
+body.dark-theme .filter-tab.active { background: var(--primary); color: #fff; }
 
-body.dark-theme .auth-container h1,
-body.dark-theme .auth-container p,
-body.dark-theme .auth-container label {
-  color: var(--text-primary) !important;
-}
+body.dark-theme .progress-bar-container { background: var(--border); }
 
-body.dark-theme .auth-toggle, 
-body.dark-theme .demo-info {
-  color: var(--text-secondary) !important;
-}
+body.dark-theme .form-group input,
+body.dark-theme .form-group textarea,
+body.dark-theme .form-group select { background: var(--surface-2); color: var(--text); border-color: var(--border); }
 
-.grade-chart-wrapper {
-  background: var(--surface);
-  padding: 2rem;
-  border-radius: 0.75rem;
-  margin-top: 2rem;
-  box-shadow: var(--shadow-md);
-}
-
-.chart-title {
-  margin-bottom: 2rem;
-  text-align: center;
-}
-
-.bar-chart {
-  display: flex;
-  align-items: flex-end;
-  justify-content: space-around;
-  height: 300px; 
-  border-bottom: 2px solid var(--border);
-  gap: 20px;
-  padding-bottom: 10px;
-}
-
-.bar-container {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  flex: 1;
-  height: 100%;
-}
-
-.grade-bar-wrapper {
-  height: 100%;
-  width: 100%;
-  display: flex;
-  align-items: flex-end;
-  justify-content: center;
-}
-
-.grade-bar {
-  width: 50px;
-  background: var(--primary-color);
-  border-radius: 6px 6px 0 0;
-  position: relative;
-  transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
-  display: flex;
-  justify-content: center;
-}
-
-.bar-score-text {
-  position: absolute;
-  top: -25px;
-  font-weight: bold;
-  font-size: 0.85rem;
-  color: var(--text-primary);
-  white-space: nowrap;
-}
-
-.bar-info {
-  margin-top: 15px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  text-align: center;
-}
-
-.course-name-label {
-  font-size: 0.75rem;
-  font-weight: 600;
-  color: var(--text-primary);
-  max-width: 100px; 
-  line-height: 1.2;
-}
-
-.course-percentage {
-  font-size: 0.7rem;
-  color: var(--text-secondary);
-  margin-top: 4px;
-}
-
-/* Hover Effect */
-.grade-bar:hover {
-  filter: brightness(1.2);
-  transform: scaleX(1.1);
-  background: var(--secondary-color);
-}
-
-/* Assessment Modal */
-.assessment-modal-overlay {
-  position: fixed;
-  inset: 0;
-  background: rgba(0, 0, 0, 0.55);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 1000;
-  animation: fadeIn 0.2s ease;
-}
-
-.assessment-modal {
-  background: var(--surface);
-  color: var(--text-primary);
-  border-radius: 0.75rem;
-  width: 100%;
-  max-width: 520px;
-  box-shadow: var(--shadow-lg);
-  overflow: hidden;
-}
-
-.modal-header {
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  padding: 1.5rem;
-  border-bottom: 1px solid var(--border);
-  gap: 1rem;
-}
-
-.modal-header h2 {
-  margin: 0;
-  font-size: 1.2rem;
-  color: var(--text-primary);
-}
-
-.modal-close-btn {
-  background: none;
-  border: none;
-  font-size: 1.1rem;
-  cursor: pointer;
-  color: var(--text-secondary);
-  padding: 0;
-  line-height: 1;
-  flex-shrink: 0;
-}
-
-.modal-close-btn:hover {
-  color: var(--text-primary);
-  transform: none;
-  box-shadow: none;
-  background: none;
-}
-
-.modal-body {
-  padding: 1.5rem;
-}
-
-.modal-info-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
-  gap: 1rem;
-  margin-bottom: 1.25rem;
-}
-
-.modal-info-item {
-  display: flex;
-  flex-direction: column;
-  gap: 0.25rem;
-}
-
-.modal-label {
-  font-size: 0.75rem;
-  font-weight: 700;
-  text-transform: uppercase;
-  color: var(--text-secondary);
-  letter-spacing: 0.05em;
-}
-
-.modal-value {
-  font-size: 1rem;
-  color: var(--text-primary);
-}
-
-.modal-description {
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-  padding-top: 1rem;
-  border-top: 1px solid var(--border);
-}
-
-.modal-description p {
-  color: var(--text-primary);
-  line-height: 1.6;
-}
-
-.modal-footer {
-  padding: 1rem 1.5rem;
-  border-top: 1px solid var(--border);
-  display: flex;
-  justify-content: flex-end;
-  gap: 0.5rem;
-}
-
-/* Active nav link */
-.nav-link.active {
-  background-color: var(--primary-color);
-  color: white;
-  border-radius: 0.375rem;
-}
-
-/* Form row layout */
-.form-row {
-  display: flex;
-  gap: 1rem;
-  flex-wrap: wrap;
-}
-
-.form-row .form-group {
-  flex: 1;
-  min-width: 150px;
-}
-
-/* Info text messages */
-.info-text {
-  padding: 0.75rem 1rem;
-  background-color: #dbeafe;
-  color: #1e40af;
-  border: 1px solid #93c5fd;
-  border-radius: 0.375rem;
-  margin-bottom: 1rem;
-  font-size: 0.9rem;
-}
-
-body.dark-theme .info-text {
-  background-color: #1e3a5f;
-  color: #93c5fd;
-  border-color: #2563eb;
-}
-
-body.dark-theme .course-saved-banner {
-  background: #064e3b;
-  color: #6ee7b7;
-  border-color: #10b981;
-}
-
-/* Status badges */
-.status-badge {
-  display: inline-block;
-  padding: 0.2rem 0.6rem;
-  border-radius: 9999px;
-  font-size: 0.75rem;
-  font-weight: 600;
-  text-transform: capitalize;
-}
-
-.status-badge.open { background: #dbeafe; color: #1e40af; }
-.status-badge.upcoming { background: #fef3c7; color: #92400e; }
-.status-badge.closed { background: #f3f4f6; color: #4b5563; }
-.status-badge.completed { background: #d1fae5; color: #065f46; }
-.status-badge.pending { background: #fef3c7; color: #92400e; }
-
-body.dark-theme .status-badge.open { background: #1e3a5f; color: #93c5fd; }
-body.dark-theme .status-badge.upcoming { background: #78350f; color: #fcd34d; }
-body.dark-theme .status-badge.closed { background: #374151; color: #d1d5db; }
-body.dark-theme .status-badge.completed { background: #064e3b; color: #6ee7b7; }
-body.dark-theme .status-badge.pending { background: #78350f; color: #fcd34d; }
-
-/* Responsive tables */
-.course-management-table {
-  width: 100%;
-  border-collapse: collapse;
-  font-size: 0.9rem;
-  overflow-x: auto;
-}
-
-.course-management-table th {
-  background: var(--background);
-  color: var(--text-secondary);
-  font-size: 0.75rem;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  padding: 0.75rem 1rem;
-  text-align: left;
-  border-bottom: 2px solid var(--border);
-}
-
-.course-management-table td {
-  padding: 0.75rem 1rem;
-  border-bottom: 1px solid var(--border);
-  color: var(--text-primary);
-}
-
-.course-management-table tr:hover td {
-  background: var(--background);
-}
-
-/* Back button */
-.btn-back {
-  background: none;
-  border: none;
-  color: var(--primary-color);
-  cursor: pointer;
-  font-size: 1rem;
-  padding: 0.5rem 0;
-  margin-bottom: 1rem;
-  font-weight: 600;
-}
-
-.btn-back:hover {
-  color: var(--secondary-color);
-  background: none;
-  box-shadow: none;
-  transform: none;
-}
-
-/* Progress bar */
-.progress-bar-container {
-  width: 100%;
-  height: 8px;
-  background: var(--border);
-  border-radius: 4px;
-  overflow: hidden;
-}
-
-.progress-bar {
-  height: 100%;
-  background: var(--primary-color);
-  border-radius: 4px;
-  transition: width 0.3s ease;
-}
-
-/* Courses grid */
-.courses-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-  gap: 1.5rem;
-  margin-top: 1rem;
-}
-
-/* Grades grid */
-.grades-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-  gap: 1.5rem;
-  margin-top: 1rem;
-}
-
-/* Progress item */
-.progress-item {
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-  margin-bottom: 1rem;
-}
-
-.progress-item label {
-  min-width: 120px;
-  font-weight: 600;
-  font-size: 0.9rem;
-}
-
-.progress-item span {
-  min-width: 50px;
-  text-align: right;
-  font-weight: 600;
-}
-
-body.dark-theme .progress-bars {
-  background-color: var(--surface);
-}
+body.dark-theme .ac-footer { border-color: var(--border); }
+body.dark-theme .modal-actions,
+body.dark-theme .modal-footer { border-color: var(--border); }
+body.dark-theme .modal-top,
+body.dark-theme .modal-header { border-color: var(--border); }
