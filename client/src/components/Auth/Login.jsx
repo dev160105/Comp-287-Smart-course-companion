@@ -4,6 +4,7 @@ import api from '../../utils/api';
 import { setAuthData } from '../../utils/auth';
 
 export default function Login({ onLoginSuccess }) {
+  const [role, setRole] = useState(null); // null = role picker, 'student' or 'admin'
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
@@ -16,6 +17,19 @@ export default function Login({ onLoginSuccess }) {
     try {
       const res = await api.post('/api/auth/login', { email, password });
       const { token, user } = res.data;
+
+      // Validate the user's role matches the selected portal
+      if (role === 'student' && user.role !== 'student') {
+        setError('This account is not a student account. Please use the Admin/Instructor portal.');
+        setLoading(false);
+        return;
+      }
+      if (role === 'admin' && user.role === 'student') {
+        setError('This account is not an admin or instructor account. Please use the Student portal.');
+        setLoading(false);
+        return;
+      }
+
       setAuthData(token, user);
       onLoginSuccess(user);
     } catch (err) {
@@ -25,42 +39,89 @@ export default function Login({ onLoginSuccess }) {
     }
   };
 
+  // Role picker screen
+  if (!role) {
+    return (
+      <div className="login-role-picker">
+        <div className="login-logo">
+          <span className="login-logo-icon">🎓</span>
+          <h1>Smart Course Companion</h1>
+          <p>Please select your role to continue</p>
+        </div>
+        <div className="role-cards">
+          <button className="role-card student-card" onClick={() => setRole('student')}>
+            <span className="role-icon">👨‍🎓</span>
+            <h2>Student</h2>
+            <p>Access your courses, grades, and progress</p>
+            <span className="role-arrow">→</span>
+          </button>
+          <button className="role-card admin-card" onClick={() => setRole('admin')}>
+            <span className="role-icon">👨‍🏫</span>
+            <h2>Admin / Instructor</h2>
+            <p>Manage courses, assessments, and students</p>
+            <span className="role-arrow">→</span>
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  // Login form screen
   return (
-    <div className="login-container">
-      <h1>Smart Course Companion - Login</h1>
-      <form onSubmit={handleSubmit}>
+    <div className={`login-container ${role === 'admin' ? 'admin-login' : 'student-login'}`}>
+      <button className="back-button" onClick={() => { setRole(null); setError(''); setEmail(''); setPassword(''); }}>
+        ← Back
+      </button>
+
+      <div className="login-header">
+        <span className="login-role-badge">
+          {role === 'student' ? '👨‍🎓 Student Portal' : '👨‍🏫 Admin / Instructor Portal'}
+        </span>
+        <h1>Smart Course Companion</h1>
+        <p className="login-subtitle">
+          {role === 'student' ? 'Sign in to your student account' : 'Sign in to manage your courses'}
+        </p>
+      </div>
+
+      <form onSubmit={handleSubmit} className="login-form">
         <div className="form-group">
-          <label htmlFor="email">Email:</label>
+          <label htmlFor="email">Email Address</label>
           <input
             type="email"
             id="email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            placeholder="your.email@university.edu"
+            placeholder={role === 'student' ? 'student@university.edu' : 'instructor@university.edu'}
             required
           />
         </div>
         <div className="form-group">
-          <label htmlFor="password">Password:</label>
+          <label htmlFor="password">Password</label>
           <input
             type="password"
             id="password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            placeholder="Enter password"
+            placeholder="Enter your password"
             required
           />
         </div>
         {error && <p className="error-message">{error}</p>}
-        <button type="submit" className="btn-primary" disabled={loading}>
-          {loading ? 'Logging in...' : 'Login'}
+        <button type="submit" className={`btn-login ${role === 'admin' ? 'btn-admin' : 'btn-student'}`} disabled={loading}>
+          {loading ? 'Signing in...' : 'Sign In'}
         </button>
       </form>
+
       <div className="demo-info">
         <p><strong>Demo Credentials:</strong></p>
-        <p>🎓 Student: john.doe@university.edu / password123</p>
-        <p>👨‍🏫 Professor: m.brown@university.edu / password123</p>
-        <p>🔑 Admin: admin@university.edu / admin123</p>
+        {role === 'student' ? (
+          <p>📧 john.doe@university.edu &nbsp;|&nbsp; 🔑 password123</p>
+        ) : (
+          <>
+            <p>👨‍🏫 m.brown@university.edu &nbsp;|&nbsp; 🔑 password123</p>
+            <p>🔑 admin@university.edu &nbsp;|&nbsp; 🔑 admin123</p>
+          </>
+        )}
       </div>
     </div>
   );
