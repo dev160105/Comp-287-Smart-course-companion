@@ -75,7 +75,7 @@ export default function Login({ onLoginSuccess }) {
   return (
     <div className={`login-container ${role === 'admin' ? 'admin-mode' : ''}`}>
       <h1 className="login-title">
-        {role === 'student' ? '🎓 Student Portal Login' : '🛠 Admin Portal Login'}
+        {role === 'student' ? '🎓 Student Portal Login' : '🛠 Admin/Instructor Portal Login'}
       </h1>
 
       <div className="role-toggle">
@@ -91,7 +91,7 @@ export default function Login({ onLoginSuccess }) {
           className={role === 'admin' ? 'role-btn active' : 'role-btn'}
           onClick={() => { setRole('admin'); setError(''); }}
         >
-          Admin
+          Admin/Instructor
         </button>
       </div>
 

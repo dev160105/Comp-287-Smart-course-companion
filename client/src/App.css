@@ -7,20 +7,20 @@
 .main-content { flex: 1; overflow-y: auto; }
 
 /* ── Typography helpers ──────────────────────────────────── */
-h1 { font-size: 1.65rem; font-weight: 700; margin-bottom: 1.25rem; }
-h2 { font-size: 1.3rem;  font-weight: 600; margin-bottom: 1rem; }
-h3 { font-size: 1.05rem; font-weight: 600; }
-section { margin-bottom: 2rem; }
-section h2 { border-bottom: 2px solid var(--primary); padding-bottom: .5rem; }
+h1 { font-size: 2.5rem; font-weight: 900; margin-bottom: 2rem; letter-spacing: -1px; }
+h2 { font-size: 1.5rem;  font-weight: 800; margin-bottom: 1.5rem; }
+h3 { font-size: 1.1rem; font-weight: 800; }
+section { margin-bottom: 3.5rem; }
+section h2 { border-bottom: 3px solid var(--primary); padding-bottom: 1rem; }
 
 /* ── Assessment Manager ──────────────────────────────────── */
 .assessment-manager,
 .grade-manager {
   background: var(--surface);
-  border-radius: var(--radius-lg);
-  box-shadow: var(--shadow-sm);
+  border-radius: 16px;
+  box-shadow: 0 4px 12px rgba(0,0,0,.08);
   border: 1px solid var(--border);
-  padding: 1.75rem;
+  padding: 2.5rem;
 }
 
 /* ── Status badge extras ─────────────────────────────────── */
@@ -31,8 +31,8 @@ section h2 { border-bottom: 2px solid var(--primary); padding-bottom: .5rem; }
 .nav-link.active { background: rgba(255,255,255,.2); font-weight: 600; }
 
 /* ── Form row ────────────────────────────────────────────── */
-.form-row { display: flex; gap: 1.25rem; flex-wrap: wrap; }
-.form-row .form-group { flex: 1; min-width: 200px; }
+.form-row { display: grid; grid-template-columns: repeat(auto-fit,minmax(240px,1fr)); gap: 1.5rem; }
+.form-row .form-group { min-width: 0; }
 
 /* ── Info text ───────────────────────────────────────────── */
 .info-text { color: var(--success); font-weight: 500; font-size: .875rem; margin-bottom: .75rem; }
@@ -40,40 +40,44 @@ section h2 { border-bottom: 2px solid var(--primary); padding-bottom: .5rem; }
 /* ── Progress visualization ──────────────────────────────── */
 .course-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-  gap: 1.25rem;
-  margin-top: 1rem;
+  grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+  gap: 2rem;
+  margin-top: 2rem;
 }
 .course-progress-card {
   background: var(--surface);
   border: 1px solid var(--border);
-  border-radius: var(--radius-lg);
-  padding: 1.25rem;
-  box-shadow: var(--shadow-sm);
+  border-radius: 16px;
+  padding: 2rem;
+  box-shadow: 0 4px 12px rgba(0,0,0,.08);
+  transition: all .3s cubic-bezier(0.4, 0, 0.2, 1);
 }
-.course-progress-card h3 { font-size: .95rem; margin-bottom: .75rem; color: var(--text); }
+.course-progress-card:hover { box-shadow: 0 16px 32px rgba(0,0,0,.15); transform: translateY(-6px); }
+.course-progress-card h3 { font-size: 1.15rem; margin-bottom: 1.25rem; color: var(--text); font-weight: 800; }
 
 /* ── Course detail ───────────────────────────────────────── */
-.course-detail { background: var(--surface); border-radius: var(--radius-lg); border: 1px solid var(--border); padding: 1.75rem; box-shadow: var(--shadow-sm); }
-.course-detail table { margin-top: 1rem; }
+.course-detail { background: var(--surface); border-radius: 16px; border: 1px solid var(--border); padding: 2.5rem; box-shadow: 0 4px 12px rgba(0,0,0,.08); }
+.course-detail table { margin-top: 2rem; }
 
 /* ── Grade entry table ───────────────────────────────────── */
 .grade-entry-table input[type="number"] {
-  width: 80px; padding: .35rem .5rem; font-size: .85rem;
-  border: 1.5px solid var(--border); border-radius: var(--radius);
+  width: 90px; padding: .5rem .65rem; font-size: .9rem;
+  border: 1.5px solid var(--border); border-radius: 8px;
   background: var(--surface); color: var(--text);
+  transition: all .2s;
 }
 .grade-entry-table input[type="number"]:focus {
-  outline: none; border-color: var(--primary); box-shadow: 0 0 0 2px rgba(37,99,235,.1);
+  outline: none; border-color: var(--primary); box-shadow: 0 0 0 4px rgba(37,99,235,.12);
+  background: rgba(37,99,235,.02);
 }
 
 /* ── Course list (student) ───────────────────────────────── */
-.course-list { background: var(--surface); padding: 1.75rem; border-radius: var(--radius-lg); box-shadow: var(--shadow-sm); border: 1px solid var(--border); }
+.course-list { background: var(--surface); padding: 2.5rem; border-radius: 16px; box-shadow: 0 4px 12px rgba(0,0,0,.08); border: 1px solid var(--border); }
 .courses-table { overflow-x: auto; }
 
 /* ── Assessment list (student) ───────────────────────────── */
-.assessment-list { background: var(--surface); padding: 1.75rem; border-radius: var(--radius-lg); box-shadow: var(--shadow-sm); border: 1px solid var(--border); }
-.assessments-list { margin-top: 1rem; }
+.assessment-list { background: var(--surface); padding: 2.5rem; border-radius: 16px; box-shadow: 0 4px 12px rgba(0,0,0,.08); border: 1px solid var(--border); }
+.assessments-list { margin-top: 1.5rem; }
 
 /* ── Dark mode fixes for specific elements ───────────────── */
 body.dark-theme .btn-secondary {
