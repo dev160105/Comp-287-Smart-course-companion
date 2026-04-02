@@ -13,8 +13,10 @@
   align-items: center;
 }
 
-/* ─── Role Picker ─────────────────────────────────────── */
-.login-role-picker {
+/* (login styles live in index.css per hsk1006's original implementation) */
+
+/* ─── placeholder: unused ─────────────────────────────── */
+.login-role-picker-unused {
   display: flex;
   flex-direction: column;
   align-items: center;
